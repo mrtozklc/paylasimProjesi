@@ -52,7 +52,7 @@
         android:background="@drawable/register_edit_text"
         android:ems="10"
         android:hint="ŞİFRE"
-        android:inputType="textPersonName"
+        android:inputType="numberPassword"
         android:padding="16dp"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
