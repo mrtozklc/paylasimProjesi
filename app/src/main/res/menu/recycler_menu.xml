@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/mesajyolla_id"  android:title="mesaj gönder"></item>
+    <item android:id="@+id/gonderiSil_id"  android:title="sil"></item>
+
+
+</menu>

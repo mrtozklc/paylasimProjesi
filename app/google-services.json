@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "207839476549",
+    "project_id": "paylas-b0f59",
+    "storage_bucket": "paylas-b0f59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207839476549:android:547645ee00588da0f31c2c",
+        "android_client_info": {
+          "package_name": "com.example.paylasim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207839476549-95qa9mfltm0rkbu4f3lpnoa9aiuc3dst.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5zCvXPRGdjuUTjbE9O_jg6SK7FrEmiEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207839476549-95qa9mfltm0rkbu4f3lpnoa9aiuc3dst.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
