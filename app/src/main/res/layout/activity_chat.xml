@@ -90,6 +90,7 @@
         app:layout_constraintBottom_toTopOf="@+id/golgelik2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/golgelik" />
+        app:layout_constraintTop_toBottomOf="@+id/golgelik"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

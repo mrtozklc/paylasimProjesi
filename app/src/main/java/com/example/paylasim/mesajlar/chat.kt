@@ -26,7 +26,7 @@ class chat : AppCompatActivity() {
     lateinit var mref: DatabaseReference
     lateinit var sohbetEdilcekKisi:String
     lateinit var mesajGonderenId:String
-    lateinit var tumMesajlar:ArrayList<mesaj>
+     var tumMesajlar=ArrayList<mesaj>()
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -91,7 +91,8 @@ class chat : AppCompatActivity() {
 
     private fun mesajlariGetir() {
 
-        tumMesajlar=ArrayList<mesaj>()
+        tumMesajlar.clear()
+
         mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
 
