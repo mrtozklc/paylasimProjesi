@@ -119,7 +119,9 @@ class profil : AppCompatActivity() {
 
 
     private fun kullaniciBilgileriVerileriniAl() {
+
         prfl_duzenlee.isEnabled=false
+
         mref.child("users").child(muser!!.uid).addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot!!.getValue()!=null){

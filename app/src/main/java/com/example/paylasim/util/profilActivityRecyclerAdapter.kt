@@ -54,6 +54,8 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
         var gonderiBegen = tumLayout.img_begen
         var begenmeSayisi=tumLayout.begenmeSayisi
         var yorumlariGoster=tumLayout.tv_yorumGoster
+        var postMenu=tumLayout.post_mesaj
+
 
         var myprofilActivity =profil
 
@@ -80,6 +82,10 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
                yorumlarFragmentiniBaslat(anlikGonderi)
 
 
+            }
+
+            if (anlikGonderi.userID.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                postMenu.visibility=View.GONE
             }
 
             yorumlariGoster.setOnClickListener {

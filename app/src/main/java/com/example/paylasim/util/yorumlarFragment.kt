@@ -74,9 +74,10 @@ class yorumlarFragment : Fragment() {
             }
 
         }
-        view.recyclerviewYorumlar.layoutManager=
-            LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
+        view.recyclerviewYorumlar.layoutManager= LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
         view.recyclerviewYorumlar.adapter=adapter
+
+
 
 
 
@@ -95,6 +96,13 @@ class yorumlarFragment : Fragment() {
 
 
             et_mesajEkle.setText("")
+
+            view.recyclerviewYorumlar.smoothScrollToPosition(view.recyclerviewYorumlar.adapter!!.itemCount)
+
+
+
+
+
         }
 
         setupProfilPicture()

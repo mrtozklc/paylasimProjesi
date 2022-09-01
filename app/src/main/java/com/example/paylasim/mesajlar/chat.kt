@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.paylasim.R
 import com.example.paylasim.login.LoginActivity
 import com.example.paylasim.models.kullanicilar
@@ -26,7 +28,19 @@ class chat : AppCompatActivity() {
     lateinit var mref: DatabaseReference
     lateinit var sohbetEdilcekKisi:String
     lateinit var mesajGonderenId:String
-     var tumMesajlar=ArrayList<mesaj>()
+    lateinit var myRecyclerViewAdapter:mesajlarActivityRecyclerAdapter
+    lateinit var myRecyclerview:RecyclerView
+    lateinit var eventListener: ChildEventListener
+    lateinit var eventListenerRefresh: ChildEventListener
+
+    val gosterilecekMesajSayisi=10
+    var sayfaSayisi=1
+    var mesajPosition=0
+    var refreshMesajPosition=0
+    var getirilenMesajId=""
+    var zatenListedeOlanMesajID=""
+    var tumMesajlar=ArrayList<mesaj>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -43,67 +57,125 @@ class chat : AppCompatActivity() {
 
         tvv_mesajGonder.setOnClickListener {
 
-            var mesajAtan=HashMap<String,Any>()
-            mesajAtan.put("mesaj",et_mesajEkle.text.toString())
-            mesajAtan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
-            mesajAtan.put("type","text")
-            mesajAtan.put("goruldu",true)
-            mesajAtan.put("user_id",mesajGonderenId)
-
-            mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).push().setValue(mesajAtan)
-
-            var mesajAlan=HashMap<String,Any>()
-            mesajAlan.put("mesaj",et_mesajEkle.text.toString())
-            mesajAlan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
-            mesajAlan.put("type","text")
-            mesajAlan.put("goruldu",false)
-            mesajAlan.put("user_id",mesajGonderenId)
-            mref.child("mesajlar").child(sohbetEdilcekKisi).child(mesajGonderenId).push().setValue(mesajAlan)
+            if (et_mesajEkle.text.toString().equals("")){
 
 
-            var KonusmamesajAtan=HashMap<String,Any>()
-            KonusmamesajAtan.put("son_mesaj",et_mesajEkle.text.toString())
-            KonusmamesajAtan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
-            KonusmamesajAtan.put("goruldu",true)
+            }else{
 
-            mref.child("konusmalar").child(mesajGonderenId).child(sohbetEdilcekKisi).push().setValue(KonusmamesajAtan)
+                var mesajAtan=HashMap<String,Any>()
+                mesajAtan.put("mesaj",et_mesajEkle.text.toString())
+                mesajAtan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
+                mesajAtan.put("type","text")
+                mesajAtan.put("goruldu",true)
+                mesajAtan.put("user_id",mesajGonderenId)
+                var mesajKey = mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).push().key
 
-            var KonusmamesajAlan=HashMap<String,Any>()
-            KonusmamesajAlan.put("son_mesaj",et_mesajEkle.text.toString())
-            KonusmamesajAlan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
-            KonusmamesajAlan.put("goruldu",false)
-            mref.child("konusmalar").child(sohbetEdilcekKisi).child(mesajGonderenId).push().setValue(KonusmamesajAlan)
 
-            et_mesajEkle.setText("")
+                mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).child(mesajKey!!).setValue(mesajAtan)
+
+                var mesajAlan=HashMap<String,Any>()
+                mesajAlan.put("mesaj",et_mesajEkle.text.toString())
+                mesajAlan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
+                mesajAlan.put("type","text")
+                mesajAlan.put("goruldu",false)
+                mesajAlan.put("user_id",mesajGonderenId)
+                mref.child("mesajlar").child(sohbetEdilcekKisi).child(mesajGonderenId).child(mesajKey).setValue(mesajAlan)
+
+
+                var KonusmamesajAtan=HashMap<String,Any>()
+                KonusmamesajAtan.put("son_mesaj",et_mesajEkle.text.toString())
+                KonusmamesajAtan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
+                KonusmamesajAtan.put("goruldu",true)
+
+                mref.child("konusmalar").child(mesajGonderenId).child(sohbetEdilcekKisi).setValue(KonusmamesajAtan)
+
+                var KonusmamesajAlan=HashMap<String,Any>()
+                KonusmamesajAlan.put("son_mesaj",et_mesajEkle.text.toString())
+                KonusmamesajAlan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
+                KonusmamesajAlan.put("goruldu",false)
+                mref.child("konusmalar").child(sohbetEdilcekKisi).child(mesajGonderenId).setValue(KonusmamesajAlan)
+
+                et_mesajEkle.setText("")
+
+
+            }
 
 
 
 
         }
 
+        refresh_id.setOnRefreshListener(object :SwipeRefreshLayout.OnRefreshListener{
+            override fun onRefresh() {
+
+                mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).addListenerForSingleValueEvent(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+
+                        if(snapshot!!.childrenCount.toInt() != tumMesajlar.size){
+                            refreshMesajPosition=0
 
 
 
+                            refreshMesajlar()
+
+                        }else{
+
+                            refresh_id.isRefreshing = false
+                            refresh_id.isEnabled = false
+
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+
+                })
+
+
+                refresh_id.isRefreshing=false
+            }
+
+        })
 
         setupAuthLis()
-        mesajlariGetir()
     }
 
     private fun mesajlariGetir() {
 
         tumMesajlar.clear()
 
-        mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
 
-                for (mesaj in snapshot.children){
-                    var okunanMesaj=mesaj.getValue(com.example.paylasim.models.mesaj::class.java)
-                    tumMesajlar.add(okunanMesaj!!)
+
+       eventListener= mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).limitToLast(gosterilecekMesajSayisi).addChildEventListener(object :ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                var okunanMesaj=snapshot.getValue(com.example.paylasim.models.mesaj::class.java)
+                tumMesajlar.add(okunanMesaj!!)
+
+                if (mesajPosition==0){
+
+                    getirilenMesajId= snapshot!!.key!!
+                    zatenListedeOlanMesajID=snapshot!!.key!!
 
                 }
-                mesajlarRecyclerview()
+                mesajPosition++
+
+
+
+
+                myRecyclerViewAdapter.notifyItemChanged(tumMesajlar.size-1)
+                myRecyclerview.scrollToPosition(tumMesajlar.size-1)
+
+
             }
 
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            }
 
             override fun onCancelled(error: DatabaseError) {
             }
@@ -111,14 +183,72 @@ class chat : AppCompatActivity() {
         })
     }
 
+    private fun refreshMesajlar(){
+
+        eventListenerRefresh=mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).orderByKey().endAt(getirilenMesajId).limitToLast(gosterilecekMesajSayisi).addChildEventListener(object :ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+
+                var okunanMesaj=snapshot.getValue(com.example.paylasim.models.mesaj::class.java)
+
+                if(!zatenListedeOlanMesajID.equals(snapshot!!.key)){
+
+                    tumMesajlar.add(refreshMesajPosition++,okunanMesaj!!)
+                    myRecyclerViewAdapter.notifyItemInserted(refreshMesajPosition-1)
+
+                }else {
+
+                    zatenListedeOlanMesajID=getirilenMesajId
+
+                }
+
+                if(refreshMesajPosition==1){
+
+                    getirilenMesajId=snapshot!!.key!!
+
+
+                }
+
+
+
+
+
+
+
+
+                refresh_id.isRefreshing = false
+                myRecyclerViewAdapter.notifyDataSetChanged()
+                myRecyclerview.scrollToPosition(0)
+
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
+
+    }
+
     private fun mesajlarRecyclerview() {
         val myLinearLayoutManager=LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
         myLinearLayoutManager.stackFromEnd=true
-        var myRecyclerview=sohbetRecycler
-        var myAdapter=mesajlarActivityRecyclerAdapter(tumMesajlar,this)
+        myRecyclerview=sohbetRecycler
+        myRecyclerViewAdapter=mesajlarActivityRecyclerAdapter(tumMesajlar,this)
 
         myRecyclerview.layoutManager=myLinearLayoutManager
-        myRecyclerview.adapter=myAdapter
+        myRecyclerview.adapter=myRecyclerViewAdapter
+
+        mesajlariGetir()
+
     }
 
     private fun sohbetEdilenUserName(sohbetEdilcekKisi: String) {
@@ -129,6 +259,8 @@ class chat : AppCompatActivity() {
 
                     var bulunanKullanici=snapshot!!.getValue(kullanicilar::class.java)!!.user_name
                     tv_mesajlasılanUserName.setText(bulunanKullanici)
+
+                    mesajlarRecyclerview()
 
                 }
 
