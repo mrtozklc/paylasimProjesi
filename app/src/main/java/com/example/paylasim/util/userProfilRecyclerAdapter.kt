@@ -9,7 +9,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasim.R
 import com.example.paylasim.models.kullaniciKampanya
-import com.example.paylasim.profil.profil
 import com.example.paylasim.profil.userProfil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -17,14 +16,15 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_profil.*
+import kotlinx.android.synthetic.main.activity_user_profil.*
 import kotlinx.android.synthetic.main.recycler_row.view.*
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:ArrayList<kullaniciKampanya>):RecyclerView.Adapter<profilActivityRecyclerAdapter.MyViewHolder>() {
+class userProfilRecyclerAdapter (var context: Context, var tumKampanyalar:ArrayList<kullaniciKampanya>):
+    RecyclerView.Adapter<userProfilRecyclerAdapter.MyViewHolder>() {
 
     init {
         Collections.sort(tumKampanyalar,object :Comparator<kullaniciKampanya>{
@@ -78,12 +78,12 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
             yorumYap.setOnClickListener {
 
 
-               yorumlarFragmentiniBaslat(anlikGonderi)
+                yorumlarFragmentiniBaslat(anlikGonderi)
 
 
             }
 
-            postMenu.visibility=View.GONE
+            postMenu.visibility= View.GONE
 
 
 
@@ -109,7 +109,7 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .setValue(currentID)
                                 gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
-                                begenmeSayisi.visibility=View.VISIBLE
+                                begenmeSayisi.visibility= View.VISIBLE
                                 begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
 
 
@@ -134,21 +134,22 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
             EventBus.getDefault()
                 .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi!!.postID))
 
-            (myprofilActivity as profil ).recyclerProfilContainer.visibility = View.INVISIBLE
-            (myprofilActivity as profil).profilFragmentContainer.visibility = View.VISIBLE
+            (myprofilActivity as userProfil).recyclerUserProfilContainer.visibility = View.INVISIBLE
+            (myprofilActivity as userProfil).userProfilFragmentContainer.visibility = View.VISIBLE
 
 
             var transaction =
-                (myprofilActivity as profil).supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.profilFragmentContainer, yorumlarFragment())
+                (myprofilActivity as userProfil).supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.userProfilFragmentContainer, yorumlarFragment())
             transaction.addToBackStack("yorumlarFragmentEklendi")
             transaction.commit()
 
         }
 
         private fun yorumlariGoster(position: Int, anlikGonderi: kullaniciKampanya) {
-            var mref=FirebaseDatabase.getInstance().reference
-            mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :ValueEventListener{
+            var mref= FirebaseDatabase.getInstance().reference
+            mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :
+                ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
 
                     var yorumSayisi=0
@@ -162,12 +163,12 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
 
                     if (yorumSayisi>=1){
-                        yorumlariGoster.visibility=View.VISIBLE
+                        yorumlariGoster.visibility= View.VISIBLE
                         yorumlariGoster.setText(yorumSayisi.toString()+"  yorum")
 
 
                     }else{
-                        yorumlariGoster.visibility=View.GONE
+                        yorumlariGoster.visibility= View.GONE
                     }
 
                 }
@@ -179,21 +180,22 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
         }
 
-         fun begeniKontrolu(anlikGonderi: kullaniciKampanya) {
+        fun begeniKontrolu(anlikGonderi: kullaniciKampanya) {
             var mRef = FirebaseDatabase.getInstance().reference
             var userID = FirebaseAuth.getInstance().currentUser!!.uid
-            mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object : ValueEventListener {
+            mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object :
+                ValueEventListener {
 
 
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
 
                     if(snapshot!!.getValue()!=null){
-                        begenmeSayisi.visibility=View.VISIBLE
+                        begenmeSayisi.visibility= View.VISIBLE
                         begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
 
                     }else {
-                        begenmeSayisi.visibility=View.GONE
+                        begenmeSayisi.visibility= View.GONE
                     }
 
                     if (snapshot!!.hasChild(userID)) {

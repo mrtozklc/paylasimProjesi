@@ -12,57 +12,61 @@ import com.example.paylasim.models.kullanicilar
 import com.example.paylasim.util.EventbusData
 import com.example.paylasim.util.imageLoader
 import com.example.paylasim.util.profilActivityRecyclerAdapter
+import com.example.paylasim.util.userProfilRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import kotlinx.android.synthetic.main.activity_profil.*
-import kotlinx.android.synthetic.main.activity_profil_ayarlar.tv_Mesaj
+import kotlinx.android.synthetic.main.activity_profil.tv_Mesaj
+import kotlinx.android.synthetic.main.activity_profil_ayarlar.*
+import kotlinx.android.synthetic.main.activity_user_profil.*
 import org.greenrobot.eventbus.EventBus
 
-class profil : AppCompatActivity() {
-     lateinit var mref:DatabaseReference
-     lateinit var muser:FirebaseUser
+class userProfil : AppCompatActivity() {
+
+    lateinit var mref: DatabaseReference
+    lateinit var muser: FirebaseUser
     var tumGonderiler=ArrayList<kullaniciKampanya>()
-    private lateinit var recyclerviewadapter:profilActivityRecyclerAdapter
-
-
-
-
+    lateinit var secilenUser:String
+    private lateinit var recyclerviewadapter: userProfilRecyclerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profil)
+        setContentView(R.layout.activity_user_profil)
 
 
-        mref=FirebaseDatabase.getInstance().reference
+
+
+
+        mref= FirebaseDatabase.getInstance().reference
         muser= FirebaseAuth.getInstance().currentUser!!
+        secilenUser= intent.getStringExtra("secilenUserId")!!
 
 
-        kullaniciBilgileriVerileriniAl()
+        kullaniciBilgileriVerileriniAl(secilenUser)
         profilDuzenle()
-        verileriGetir(muser.uid)
+        verileriGetir(secilenUser)
 
 
         //******************** KONTROL ET**************************
         ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(this));
 
 
-
     }
-
-
     private fun verileriGetir(kullanicid: String) {
 
 
-        mref.child("users").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
+        mref.child("users").child(kullanicid).addListenerForSingleValueEvent(object :
+            ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
                 var userID=kullanicid
                 var kullaniciadi=snapshot.getValue(kullanicilar::class.java)!!.user_name
                 var photoURL=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture
 
-                mref.child("kampanya").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
+                mref.child("kampanya").child(kullanicid).addListenerForSingleValueEvent(object :
+                    ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot!!.hasChildren()){
 
@@ -87,10 +91,10 @@ class profil : AppCompatActivity() {
                             }
 
                         }
-                        val layoutManager= LinearLayoutManager(this@profil)
-                        recyclerProfil.layoutManager=layoutManager
-                        recyclerviewadapter= profilActivityRecyclerAdapter(this@profil,tumGonderiler)
-                        recyclerProfil.adapter=recyclerviewadapter
+                        val layoutManager= LinearLayoutManager(this@userProfil)
+                        recyclerUserProfil.layoutManager=layoutManager
+                        recyclerviewadapter=userProfilRecyclerAdapter(this@userProfil,tumGonderiler)
+                        recyclerUserProfil.adapter=recyclerviewadapter
 
 
 
@@ -111,17 +115,17 @@ class profil : AppCompatActivity() {
 
     }
     override fun onBackPressed() {
-        recyclerProfilContainer.visibility= View.VISIBLE
-        profilFragmentContainer.visibility= View.GONE
+        recyclerUserProfilContainer.visibility= View.VISIBLE
+        userProfilFragmentContainer.visibility= View.GONE
         super.onBackPressed()
     }
 
 
-    private fun kullaniciBilgileriVerileriniAl() {
+    private fun kullaniciBilgileriVerileriniAl(kullanicid: String) {
 
         tv_Mesaj.isEnabled=false
 
-        mref.child("users").child(muser!!.uid).addValueEventListener(object :ValueEventListener{
+        mref.child("users").child(kullanicid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot!!.getValue()!=null){
                     var okunanKullanici=snapshot!!.getValue(kullanicilar::class.java)
@@ -129,17 +133,16 @@ class profil : AppCompatActivity() {
 
                     tv_Mesaj.isEnabled=true
 
-                    tv_kullaniciAdi
-                        .setText(okunanKullanici!!.user_name)
-                    tv_post.setText(okunanKullanici!!.user_detail!!.post)
+                    tv_kullaniciAdii.setText(okunanKullanici!!.user_name)
+                    tv_postt.setText(okunanKullanici!!.user_detail!!.post)
                     if (!okunanKullanici!!.user_detail!!.biography.isNullOrEmpty()){
-                        tv_bio.setText(okunanKullanici!!.user_detail!!.biography)
+                        tv_bioo.setText(okunanKullanici!!.user_detail!!.biography)
 
 
                     }
 
                     var imgUrl:String=okunanKullanici!!.user_detail!!.profile_picture!!
-                    imageLoader.setImage(imgUrl,profile_image,null,"")
+                    imageLoader.setImage(imgUrl,profile_imagee,null,"")
 
 
                 }

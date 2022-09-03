@@ -16,6 +16,7 @@ import com.example.paylasim.mesajlar.chat
 import com.example.paylasim.models.kullaniciKampanya
 import com.example.paylasim.profil.profil
 import com.example.paylasim.profil.profilAyarlarActivity
+import com.example.paylasim.profil.userProfil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -77,6 +78,31 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)
 
             kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
+
+
+
+            userNameTitle.setOnClickListener {
+
+
+                if (anlikGonderi.userID!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+
+                    val intent=Intent(myMainActivity,profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    myMainActivity.startActivity(intent)
+
+                }else{
+
+                    val intent=Intent(myMainActivity,userProfil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    intent.putExtra("secilenUserId",anlikGonderi.userID!!)
+                    Log.e("murat","secilenuser"+anlikGonderi.userID)
+                    myMainActivity.startActivity(intent)
+
+
+                }
+
+
+
+
+            }
 
             begeniKontrolu(anlikGonderi)
             yorumlariGoster(position,anlikGonderi)

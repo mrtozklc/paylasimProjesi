@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".profil.profil">
+    tools:context=".profil.userProfil">
+
 
     <FrameLayout
-        android:id="@+id/profilFragmentContainer"
+        android:id="@+id/userProfilFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toTopOf="parent"
@@ -19,7 +20,7 @@
     </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/recyclerProfilContainer"
+        android:id="@+id/recyclerUserProfilContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,147 +29,120 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="-4dp"
+            tools:layout_editor_absoluteY="181dp">
+
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appbar"
 
-                android:layout_height="192dp"
-                android:layout_width="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="192dp">
 
                 <com.google.android.material.appbar.CollapsingToolbarLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:toolbarId="@+id/toolbar"
+                    app:contentScrim="?attr/colorPrimary"
                     app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
 
-                    app:contentScrim="?attr/colorPrimary">
-
+                    app:toolbarId="@+id/toolbar">
 
 
                 </com.google.android.material.appbar.CollapsingToolbarLayout>
+
             </com.google.android.material.appbar.AppBarLayout>
+
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <TextView
-            android:id="@+id/tv_kullaniciAdi"
+            android:id="@+id/tv_kullaniciAdii"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="kullanıcı adı"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
+            android:id="@+id/profile_imagee"
             android:layout_width="107dp"
             android:layout_height="106dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:src="@drawable/ic_launcher_stars_foreground"
             app:civ_border_color="#6C6A6A"
             app:civ_border_width="1dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_kullaniciAdi" />
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="takipçi"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/tv_takipci"
-            app:layout_constraintStart_toStartOf="@+id/tv_takipci"
-            app:layout_constraintTop_toBottomOf="@+id/tv_takipci" />
-
-        <TextView
-            android:id="@+id/tv_post"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="16"
-            android:textColor="#090808"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/tv_takipci"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/profile_image"
-            app:layout_constraintTop_toTopOf="@+id/profile_image" />
-
-        <TextView
-            android:id="@+id/tv_takipci"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="286"
-            android:textColor="#090909"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/tv_post"
-            app:layout_constraintTop_toTopOf="@+id/profile_image" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_kullaniciAdii" />
 
         <TextView
             android:id="@+id/textView11"
             android:layout_width="74dp"
             android:layout_height="28dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
             android:text="kampanya"
             android:textColor="@color/black"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/tv_post"
-            app:layout_constraintHorizontal_bias="0.48"
-            app:layout_constraintStart_toStartOf="@+id/tv_post"
-            app:layout_constraintTop_toBottomOf="@+id/tv_post" />
+            app:layout_constraintBottom_toBottomOf="@+id/tv_postt"
+            app:layout_constraintStart_toEndOf="@+id/tv_postt"
+            app:layout_constraintTop_toTopOf="@+id/tv_postt" />
 
         <TextView
             android:id="@+id/tv_Mesaj"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="60dp"
             android:background="@drawable/register_edit_text"
             android:padding="6dp"
-            android:text="profili düzenle"
+            android:text="Mesaj Gönder"
             android:textAlignment="center"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="@+id/profile_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/profile_image" />
+            app:layout_constraintBottom_toBottomOf="@+id/tv_bioo"
+            app:layout_constraintStart_toEndOf="@+id/tv_bioo"
+            app:layout_constraintTop_toTopOf="@+id/tv_bioo" />
 
         <TextView
-            android:id="@+id/tv_bio"
+            android:id="@+id/tv_postt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="mekan bilgileri"
+            android:layout_marginStart="60dp"
+            android:text="16"
+            android:textColor="#090808"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/profile_imagee"
+            app:layout_constraintStart_toEndOf="@+id/profile_imagee"
+            app:layout_constraintTop_toTopOf="@+id/profile_imagee" />
+
+        <TextView
+            android:id="@+id/tv_bioo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text=""
             android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.036"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+            app:layout_constraintTop_toBottomOf="@+id/profile_imagee" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerProfil"
+            android:id="@+id/recyclerUserProfil"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_bio" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_Mesaj" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
