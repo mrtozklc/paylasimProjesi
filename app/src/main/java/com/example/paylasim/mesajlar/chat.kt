@@ -3,6 +3,7 @@ package com.example.paylasim.mesajlar
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_chat.*
+import kotlinx.android.synthetic.main.fragment_yorumlar.view.*
 
 
 class chat : AppCompatActivity() {
@@ -57,10 +59,9 @@ class chat : AppCompatActivity() {
 
         tvv_mesajGonder.setOnClickListener {
 
-            if (et_mesajEkle.text.toString().equals("")){
+            var mesaj=et_mesajEkle.text.toString().trim()
 
-
-            }else{
+            if(!TextUtils.isEmpty(mesaj.toString())){
 
                 var mesajAtan=HashMap<String,Any>()
                 mesajAtan.put("mesaj",et_mesajEkle.text.toString())
@@ -104,6 +105,10 @@ class chat : AppCompatActivity() {
 
 
         }
+        imageView_back.setOnClickListener {
+            onBackPressed()
+        }
+
 
         refresh_id.setOnRefreshListener(object :SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
@@ -159,6 +164,9 @@ class chat : AppCompatActivity() {
                 }
                 mesajPosition++
 
+                mesajGorulduBilgisiniGuncelle(snapshot.key!!)
+
+
 
 
 
@@ -181,6 +189,19 @@ class chat : AppCompatActivity() {
             }
 
         })
+    }
+
+    private fun mesajGorulduBilgisiniGuncelle(mesajID: String) {
+
+        FirebaseDatabase.getInstance().getReference()
+            .child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).child(mesajID)
+            .child("goruldu").setValue(true)
+            .addOnCompleteListener {
+                FirebaseDatabase.getInstance().getReference().child("konusmalar")
+                    .child(mesajGonderenId).child(sohbetEdilcekKisi).child("goruldu").setValue(true)
+            }
+
+
     }
 
     private fun refreshMesajlar(){
@@ -207,13 +228,6 @@ class chat : AppCompatActivity() {
 
 
                 }
-
-
-
-
-
-
-
 
                 refresh_id.isRefreshing = false
                 myRecyclerViewAdapter.notifyDataSetChanged()
@@ -302,11 +316,18 @@ class chat : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.e("hata","chattesin")
+
         auth.addAuthStateListener(mauthLis)
     }
 
     override fun onStop() {
         super.onStop()
+
+        mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).removeEventListener(eventListener)
+        if (mauthLis != null) {
+            auth.removeAuthStateListener(mauthLis)
+        }
+
         if (mauthLis!=null){
             auth.removeAuthStateListener(mauthLis)
 

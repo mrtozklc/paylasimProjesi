@@ -147,6 +147,7 @@ class mesajlar : AppCompatActivity() {
         super.onPause()
 
         tumKonusmalar.clear()
+
         if(listenerAtandiMi==true){
             listenerAtandiMi=false
             mref.removeEventListener(mListener)
@@ -155,23 +156,23 @@ class mesajlar : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        tumKonusmalar.clear()
-        if (listenerAtandiMi == false) {
-            listenerAtandiMi = true
-            madapter.notifyDataSetChanged()
-        }
+
+
     }
 
     override fun onStart() {
         super.onStart()
         Log.e("hata","mesajlardasın")
+
         auth.addAuthStateListener(mauthLis)
     }
 
     override fun onStop() {
         super.onStop()
+
         auth.removeAuthStateListener(mauthLis)
         tumKonusmalar.clear()
+
         if(listenerAtandiMi==true){
             listenerAtandiMi=false
             mref.removeEventListener(mListener)

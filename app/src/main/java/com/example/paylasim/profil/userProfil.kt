@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasim.R
+import com.example.paylasim.mesajlar.chat
 import com.example.paylasim.models.kampanya
 import com.example.paylasim.models.kullaniciKampanya
 import com.example.paylasim.models.kullanicilar
@@ -114,6 +115,7 @@ class userProfil : AppCompatActivity() {
 
 
     }
+
     override fun onBackPressed() {
         recyclerUserProfilContainer.visibility= View.VISIBLE
         userProfilFragmentContainer.visibility= View.GONE
@@ -156,7 +158,10 @@ class userProfil : AppCompatActivity() {
 
     fun profilDuzenle(){
         tv_Mesaj.setOnClickListener(){
-            val intent= Intent(this,profilAyarlarActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            val intent= Intent(this,chat::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            intent.putExtra("konusulacakKisi",secilenUser)
+
+
             startActivity(intent)
         }
     }
