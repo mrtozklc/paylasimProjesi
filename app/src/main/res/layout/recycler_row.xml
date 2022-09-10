@@ -83,12 +83,12 @@
         app:layout_constraintTop_toTopOf="@+id/img_yorum" />
 
     <TextView
-        android:id="@+id/textView13"
+        android:id="@+id/geri_sayim_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="4dp"
-        android:text="00:36:42"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/textView15"

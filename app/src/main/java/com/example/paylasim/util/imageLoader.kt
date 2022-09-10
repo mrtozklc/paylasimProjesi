@@ -40,7 +40,7 @@ class imageLoader(val mcontext: Context) {
 
     companion object {
 
-        private val defaultImage = R.drawable.ic_launcher_stars_foreground
+        private val defaultImage = R.drawable.ic_launcher_person_foreground
 
         fun setImage(imgURL:String, imageView: ImageView, mProgressBar: ProgressBar?, ilkKisim:String?){
 

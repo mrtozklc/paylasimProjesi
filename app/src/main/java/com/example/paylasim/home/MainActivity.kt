@@ -10,6 +10,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasim.R
+import com.example.paylasim.bildirimler.bildirimActivity
 import com.example.paylasim.kampanyaolustur.kampanyaOlustur
 import com.example.paylasim.login.LoginActivity
 import com.example.paylasim.login.signOutFragment
@@ -51,18 +52,16 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-
-
-
-
     }
 
     override fun onBackPressed() {
        recyclerMainContainer.visibility= View.VISIBLE
       mainFragmentContainer.visibility= View.GONE
         super.onBackPressed()
+
+
     }
+
 
     private fun tumVerileriGetir(){
 
@@ -112,6 +111,7 @@ class MainActivity : AppCompatActivity() {
                                     eklenecekUserPost.postURL=ds.getValue(kampanya::class.java)!!.file_url
                                     eklenecekUserPost.postAciklama=ds.getValue(kampanya::class.java)!!.aciklama
                                     eklenecekUserPost.postYuklenmeTarih=ds.getValue(kampanya::class.java)!!.yuklenme_tarih
+                                    eklenecekUserPost.geri_sayim=ds.getValue(kampanya::class.java)!!.geri_sayim
 
                                     tumGonderiler.add(eklenecekUserPost)
 
@@ -189,6 +189,10 @@ class MainActivity : AppCompatActivity() {
         }
         if(item.itemId==R.id.mesajlar_id){
             val intent=Intent(this,mesajlar::class.java)
+            startActivity(intent)
+        }
+        if(item.itemId==R.id.bildirimler_id){
+            val intent=Intent(this,bildirimActivity::class.java)
             startActivity(intent)
         }
         return super.onOptionsItemSelected(item)

@@ -63,7 +63,7 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
             userNameTitle.setText(anlikGonderi.userName)
             imageLoader.setImage(anlikGonderi.userPhotoURL!!, profileImage, null, "")
-            Picasso.get().load(anlikGonderi.userPhotoURL).into(profileImage)
+
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)
@@ -76,9 +76,11 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
 
             yorumYap.setOnClickListener {
+                bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
 
 
-               yorumlarFragmentiniBaslat(anlikGonderi)
+
+                yorumlarFragmentiniBaslat(anlikGonderi)
 
 
             }
@@ -103,11 +105,20 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .removeValue()
+                                if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+                                    bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
+
+
+                                }
                                 gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
 
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .setValue(currentID)
+                                if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+                                    bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
+                                }
+
                                 gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
                                 begenmeSayisi.visibility=View.VISIBLE
                                 begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
@@ -130,6 +141,14 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
         }
 
         fun yorumlarFragmentiniBaslat(anlikGonderi: kullaniciKampanya) {
+
+            if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+
+                bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
+
+
+
+            }
 
             EventBus.getDefault()
                 .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi!!.postID))

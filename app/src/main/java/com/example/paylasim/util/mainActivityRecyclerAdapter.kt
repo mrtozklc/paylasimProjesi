@@ -3,6 +3,7 @@ package com.example.paylasim.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasim.R
 import com.example.paylasim.home.MainActivity
+import com.example.paylasim.kampanyaolustur.kampanyaOlustur
 import com.example.paylasim.login.LoginActivity
 import com.example.paylasim.mesajlar.chat
+import com.example.paylasim.models.kampanya
 import com.example.paylasim.models.kullaniciKampanya
 import com.example.paylasim.profil.profil
 import com.example.paylasim.profil.profilAyarlarActivity
@@ -31,6 +34,7 @@ import kotlin.Comparator
 import kotlin.collections.ArrayList
 
 class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayList<kullaniciKampanya>):RecyclerView.Adapter<mainActivityRecyclerAdapter.MyViewHolder>() {
+
 
 
 
@@ -67,17 +71,116 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
         var yorumlariGoster=tumLayout.tv_yorumGoster
         var postMenu=tumLayout.post_mesaj
         var myMainActivity = mainActivity
+        var geriSayim=tumLayout.geri_sayim_id
+
+
+
+
 
         @SuppressLint("SetTextI18n")
         fun setData(position: Int, anlikGonderi: kullaniciKampanya) {
 
             userNameTitle.setText(anlikGonderi.userName)
-            Picasso.get().load(anlikGonderi.userPhotoURL).into(profileImage)
+            imageLoader.setImage(anlikGonderi.userPhotoURL!!,profileImage,null,"")
+
+
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
-            Picasso.get().load(anlikGonderi.postURL).into(gonderi)
+
+            Picasso.get().load(anlikGonderi.postURL).fit().centerCrop().into(gonderi)
+
 
             kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
+
+            Log.e("murat","gerisayimadapter"+anlikGonderi.geri_sayim.toString())
+
+            if (anlikGonderi.geri_sayim=="1 saat"){
+
+                var mref = FirebaseDatabase.getInstance().reference
+                var currentID = FirebaseAuth.getInstance().currentUser!!.uid
+
+
+                mref.child("kampanya").child(currentID).addListenerForSingleValueEvent(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+
+                        if (snapshot!!.hasChildren()){
+                            for (ds in snapshot!!.children){
+                                var kalanSure= ds.getValue(kampanya::class.java)!!.geri_sayim
+
+                            }
+
+
+
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+
+                })
+
+
+                object : CountDownTimer(1800000, 1000) {
+
+                    override fun onTick(millisUntilFinished: Long) {
+                        var diff = millisUntilFinished
+                        val secondsInMilli: Long = 1000
+                        val minutesInMilli = secondsInMilli * 60
+                        val hoursInMilli = minutesInMilli * 60
+
+
+                        val elapsedHours = diff / hoursInMilli
+                        diff %= hoursInMilli
+
+                        val elapsedMinutes = diff / minutesInMilli
+                        diff %= minutesInMilli
+
+                        val elapsedSeconds = diff / secondsInMilli
+
+                        geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
+
+                    }
+
+                    override fun onFinish() {
+                        geriSayim.setText("kampanya süresi doldu!")
+                    }
+
+                }.start()
+
+
+            }
+            else if (anlikGonderi.geri_sayim=="2 saat"){
+
+
+                object : CountDownTimer(3600000, 1000) {
+
+                    override fun onTick(millisUntilFinished: Long) {
+                        var diff = millisUntilFinished
+                        val secondsInMilli: Long = 1000
+                        val minutesInMilli = secondsInMilli * 60
+                        val hoursInMilli = minutesInMilli * 60
+
+
+                        val elapsedHours = diff / hoursInMilli
+                        diff %= hoursInMilli
+
+                        val elapsedMinutes = diff / minutesInMilli
+                        diff %= minutesInMilli
+
+                        val elapsedSeconds = diff / secondsInMilli
+
+                        geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
+
+                    }
+
+                    override fun onFinish() {
+                        geriSayim.setText("kampanya süresi doldu!")
+                    }
+
+                }.start()
+
+            }
+
 
 
 
@@ -90,6 +193,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
                     myMainActivity.startActivity(intent)
 
                 }else{
+
 
                     val intent=Intent(myMainActivity,userProfil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                     intent.putExtra("secilenUserId",anlikGonderi.userID!!)
@@ -110,7 +214,12 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
             yorumYap.setOnClickListener {
 
+
+
                 yorumlarFragmentiniBaslat(anlikGonderi)
+
+                bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
+
 
 
 
@@ -135,11 +244,25 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .removeValue()
+
+
+
+
+                                if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+                                    bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
+
+
+                                }
+
                                 gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
 
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .setValue(currentID)
+
+                                if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+                                    bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
+                                }
                                 gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
                                 begenmeSayisi.visibility=View.VISIBLE
                                 begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
@@ -188,6 +311,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
 
 
+
                         }
                     }
 
@@ -205,9 +329,20 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
 
 
+
         }
 
         fun yorumlarFragmentiniBaslat(anlikGonderi: kullaniciKampanya) {
+
+            if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+
+                bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
+
+
+
+            }
+
+
 
             EventBus.getDefault()
                 .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi!!.postID))

@@ -3,7 +3,6 @@ package com.example.paylasim.util
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasim.R
 import com.example.paylasim.mesajlar.chat
 import com.example.paylasim.models.konusmalar
-import com.example.paylasim.models.kullanicilar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

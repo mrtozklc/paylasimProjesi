@@ -12,16 +12,13 @@ import com.example.paylasim.models.kullaniciKampanya
 import com.example.paylasim.models.kullanicilar
 import com.example.paylasim.util.EventbusData
 import com.example.paylasim.util.imageLoader
-import com.example.paylasim.util.profilActivityRecyclerAdapter
 import com.example.paylasim.util.userProfilRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
-import kotlinx.android.synthetic.main.activity_profil.*
 import kotlinx.android.synthetic.main.activity_profil.tv_Mesaj
-import kotlinx.android.synthetic.main.activity_profil_ayarlar.*
 import kotlinx.android.synthetic.main.activity_user_profil.*
 import org.greenrobot.eventbus.EventBus
 

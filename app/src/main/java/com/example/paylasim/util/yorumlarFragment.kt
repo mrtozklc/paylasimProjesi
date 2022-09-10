@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
+import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,10 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.fragment_yorumlar.*
+import kotlinx.android.synthetic.main.fragment_yorumlar.circle_profilPhoto
+import kotlinx.android.synthetic.main.fragment_yorumlar.et_mesajEkle
 import kotlinx.android.synthetic.main.fragment_yorumlar.view.*
 import kotlinx.android.synthetic.main.recycler_row_yorumlar.view.*
 import org.greenrobot.eventbus.EventBus
@@ -83,13 +87,20 @@ class yorumlarFragment : Fragment() {
 
         view.tw_yorumPaylas.setOnClickListener {
 
-            //   var yeniYorum=Comments(mUser.uid,etYorum.text.toString(),"0",0)
+            var yorum=et_mesajEkle.text.toString().trim()
+
+
+            if(!TextUtils.isEmpty(yorum.toString())){
+
             var yeniYorum = hashMapOf<String, Any>(
                 "user_id" to mUser.uid,
                 "yorum" to et_mesajEkle.text.toString(),
                 "yorum_begeni" to "0",
                 "yorum_tarih" to ServerValue.TIMESTAMP
             )
+
+
+
 
             FirebaseDatabase.getInstance().getReference().child("yorumlar")
                 .child(yorumYapilacakGonderininID!!).push().setValue(yeniYorum)
@@ -103,6 +114,7 @@ class yorumlarFragment : Fragment() {
 
 
 
+        }
         }
 
         setupProfilPicture()
@@ -130,6 +142,9 @@ class yorumlarFragment : Fragment() {
             yorumSure.setText(TimeAgo.getTimeAgoForComments(oanOlusturulanYorum!!.yorum_tarih!!))
             yorumBegenmeSayisi.setText(oanOlusturulanYorum.yorum_begeni)
             kullaniciAdiveYorum.setText(oanOlusturulanYorum.yorum)
+
+
+
 
             kullaniciBilgileriniGetir(oanOlusturulanYorum.user_id,oanOlusturulanYorum.yorum)
 
@@ -171,6 +186,7 @@ class yorumlarFragment : Fragment() {
 
             yorumBegen.setOnClickListener {
 
+
                 mRef.child("begenenler").addListenerForSingleValueEvent(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -181,6 +197,7 @@ class yorumlarFragment : Fragment() {
 
                         }else{
                             mRef.child("begenenler").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(FirebaseAuth.getInstance().currentUser!!.uid)
+
                             yorumBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
 
 

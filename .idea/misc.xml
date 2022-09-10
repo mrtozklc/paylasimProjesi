@@ -15,6 +15,7 @@
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/drawable/mesaj_alan_bg.xml" value="0.2045" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/drawable/mesaj_gonderen_bg.xml" value="0.2045" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/drawable/register_edit_text.xml" value="0.2095" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_bildirim.xml" value="0.1" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_chat.xml" value="0.2" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_kampanya_olustur.xml" value="0.14" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_login.xml" value="0.15" />
@@ -33,6 +34,7 @@
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/mesaj_alan_recycler_row.xml" value="0.2" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/mesaj_gonderen_recycler_row.xml" value="0.5" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/recycler_row.xml" value="0.5" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/recycler_row_kampanya_begen.xml" value="0.22" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/recycler_row_konusmalar.xml" value="0.5" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/recycler_row_yorumlar.xml" value="0.33" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/menu/menu.xml" value="0.20416666666666666" />

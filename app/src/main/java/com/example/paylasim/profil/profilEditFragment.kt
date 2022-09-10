@@ -1,11 +1,8 @@
 package com.example.paylasim.profil
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +15,6 @@ import com.example.paylasim.models.kullanicilar
 import com.example.paylasim.util.EventbusData
 import com.example.paylasim.util.imageLoader
 import com.google.firebase.database.*
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -26,7 +22,6 @@ import kotlinx.android.synthetic.main.fragment_profil_edit.*
 import kotlinx.android.synthetic.main.fragment_profil_edit.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.util.*
 
 
 class profilEditFragment : Fragment() {

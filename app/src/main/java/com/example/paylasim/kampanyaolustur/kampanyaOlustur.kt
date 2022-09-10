@@ -11,13 +11,17 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.paylasim.R
 import com.example.paylasim.home.MainActivity
 import com.example.paylasim.models.kampanya
+import com.example.paylasim.util.mainActivityRecyclerAdapter
 import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -34,6 +38,7 @@ import java.util.*
 class kampanyaOlustur : AppCompatActivity() {
     var secilengorsel: Uri? = null
     var secilenbitmap: Bitmap? = null
+    var secilenSure:String?=null
     private lateinit var storage: FirebaseStorage
     private lateinit var db:DatabaseReference
     private lateinit var auth: FirebaseAuth
@@ -45,10 +50,48 @@ class kampanyaOlustur : AppCompatActivity() {
         db= FirebaseDatabase.getInstance().reference
         storage = FirebaseStorage.getInstance()
         auth=Firebase.auth
+
+        val timer = ArrayList<String>()
+        timer.add("Saat Seciniz")
+        timer.add("1 saat")
+        timer.add("2 saat")
+        timer.add("3 saat")
+
+
+
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, timer)
+        spinner!!.setAdapter(spinnerAdapter)
+
+
+        spinner!!.setOnItemSelectedListener(object :AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+              secilenSure = spinner!!.selectedItem.toString()
+
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+        })
+
+
+
+
     }
 
 
+
     fun paylasimyap(view: View) {
+
+        secilenSure = spinner!!.selectedItem.toString()
+
+        val intent=Intent(this,mainActivityRecyclerAdapter::class.java)
+        intent.putExtra("time", secilenSure)
+        Log.e("murat","murat"+secilenSure)
+
+
+
         val uuid = UUID.randomUUID()
         val gorselismi = "${uuid}.jpg"
         val reference = storage.reference
@@ -90,8 +133,8 @@ class kampanyaOlustur : AppCompatActivity() {
 
 
     private fun veritabaninakaydet(downloadurl:String?){
-        var postID = db.child("posts").child(auth.uid!!).push().key
-        var yuklenenPost = kampanya(auth.uid, postID, 0,aciklama_id.text.toString(), downloadurl)
+        var postID = db.child("kampanya").child(auth.uid!!).push().key
+        var yuklenenPost = kampanya(auth.uid, postID, 0,aciklama_id.text.toString(),secilenSure, downloadurl)
 
 
         db.child("kampanya").child(auth.uid!!).child(postID!!).setValue(yuklenenPost)
