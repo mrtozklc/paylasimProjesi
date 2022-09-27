@@ -47,6 +47,7 @@ class imageLoader(val mcontext: Context) {
 
 
             val imageLoader= ImageLoader.getInstance()
+
             imageLoader.displayImage(ilkKisim+imgURL,imageView, object : ImageLoadingListener {
                 override fun onLoadingComplete(imageUri: String?, view: View?, loadedImage: Bitmap?) {
 

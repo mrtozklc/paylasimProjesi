@@ -3,8 +3,10 @@ package com.example.paylasim.mesajlar
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -50,6 +52,11 @@ class chat : AppCompatActivity() {
 
         auth= Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
+
+        progressBarChat.visibility= View.VISIBLE
+        tv_mesajlasılanUserName.visibility=View.INVISIBLE
+        sohbetRecycler.visibility=View.INVISIBLE
+
         sohbetEdilcekKisi= intent.getStringExtra("konusulacakKisi").toString()
         sohbetEdilenUserName(sohbetEdilcekKisi)
         mesajGonderenId=auth.currentUser!!.uid
@@ -94,6 +101,7 @@ class chat : AppCompatActivity() {
                 KonusmamesajAlan.put("son_mesaj",et_mesajEkle.text.toString())
                 KonusmamesajAlan.put("gonderilmeZamani",ServerValue.TIMESTAMP)
                 KonusmamesajAlan.put("goruldu",false)
+
                 mref.child("konusmalar").child(sohbetEdilcekKisi).child(mesajGonderenId).setValue(KonusmamesajAlan)
 
                 et_mesajEkle.setText("")
@@ -188,7 +196,22 @@ class chat : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
             }
 
+
         })
+
+        object :CountDownTimer(1000,1000){
+            override fun onTick(p0: Long) {
+
+                progressBarChat.visibility= View.GONE
+                tv_mesajlasılanUserName.visibility=View.VISIBLE
+                sohbetRecycler.visibility=View.VISIBLE
+            }
+
+            override fun onFinish() {
+            }
+
+        }.start()
+
     }
 
     private fun mesajGorulduBilgisiniGuncelle(mesajID: String) {
@@ -267,7 +290,7 @@ class chat : AppCompatActivity() {
 
     private fun sohbetEdilenUserName(sohbetEdilcekKisi: String) {
 
-        mref.child("users").child(sohbetEdilcekKisi).addListenerForSingleValueEvent(object :ValueEventListener{
+        mref.child("users").child("isletmeler").child(sohbetEdilcekKisi).addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot .getValue()!=null){
 
@@ -277,6 +300,24 @@ class chat : AppCompatActivity() {
                     mesajlarRecyclerview()
 
                 }
+                Log.e("chat","işletme bulunamadı çalıştı"+sohbetEdilcekKisi.toString())
+                mref.child("users").child("kullanicilar").child(sohbetEdilcekKisi).addListenerForSingleValueEvent(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot .getValue()!=null){
+
+                            var bulunanKullanici=snapshot!!.getValue(kullanicilar::class.java)!!.user_name
+                            tv_mesajlasılanUserName.setText(bulunanKullanici)
+
+                            mesajlarRecyclerview()
+
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+
+                })
+
 
             }
 
@@ -285,6 +326,7 @@ class chat : AppCompatActivity() {
             }
 
         })
+
 
     }
 

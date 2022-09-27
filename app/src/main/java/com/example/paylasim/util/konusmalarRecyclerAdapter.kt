@@ -96,7 +96,7 @@ class konusmalarRecyclerAdapter(var tumKonusmalar:ArrayList<konusmalar>,var myCo
 
             var mref= FirebaseDatabase.getInstance().reference
 
-             mref.child("users").child(userID).addListenerForSingleValueEvent(object :ValueEventListener{
+             mref.child("users").child("kullanicilar").child(userID).addListenerForSingleValueEvent(object :ValueEventListener{
                  override fun onDataChange(snapshot: DataSnapshot) {
                      if (snapshot.value !=null){
 
@@ -116,6 +116,28 @@ class konusmalarRecyclerAdapter(var tumKonusmalar:ArrayList<konusmalar>,var myCo
                  override fun onCancelled(error: DatabaseError) {
                  }
              })
+
+            mref.child("users").child("isletmeler").child(userID).addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.value !=null){
+
+
+
+                        userName.text=snapshot.child("user_name").getValue().toString()
+                        imageLoader.setImage(snapshot.child("user_detail").child("profile_picture").getValue().toString(),userpp,null,"")
+
+
+
+
+
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
 
 
         }

@@ -20,6 +20,16 @@ class profilAyarlarActivity : AppCompatActivity() {
 
         fragmentProfilEdit()
 
+        sifre_degistir.setOnClickListener {
+
+            profilAyarlarRoot.visibility= View.GONE
+            var transaction=supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.profileAyarlarContainer,sifreDegistirFragment())
+            transaction.commit()
+            transaction.addToBackStack("sifre değistir")
+
+        }
+
 
     }
 

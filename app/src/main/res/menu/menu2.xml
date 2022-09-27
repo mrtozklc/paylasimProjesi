@@ -5,6 +5,8 @@
     <item android:id="@+id/profil_id"  android:title="Profil"></item>
     <item android:id="@+id/bildirimler_id"  android:title="Bildirimler"></item>
     <item android:id="@+id/mesajlar_id"  android:title="Mesajlar"></item>
-    <item android:id="@+id/cikisYap"  android:title="Çıkış yap"></item>
+    <item
+        android:id="@+id/cikisYap"
+        android:title="Çıkış yap"></item>
 
 </menu>

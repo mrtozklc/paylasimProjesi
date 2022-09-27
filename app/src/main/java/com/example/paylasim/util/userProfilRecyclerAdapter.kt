@@ -63,7 +63,7 @@ class userProfilRecyclerAdapter (var context: Context, var tumKampanyalar:ArrayL
 
             userNameTitle.setText(anlikGonderi.userName)
             imageLoader.setImage(anlikGonderi.userPhotoURL!!, profileImage, null, "")
-            Picasso.get().load(anlikGonderi.userPhotoURL).into(profileImage)
+           // Picasso.get().load(anlikGonderi.userPhotoURL).into(profileImage)
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)

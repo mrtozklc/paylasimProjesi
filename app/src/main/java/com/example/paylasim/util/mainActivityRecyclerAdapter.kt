@@ -3,6 +3,7 @@ package com.example.paylasim.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import com.example.paylasim.kampanyaolustur.kampanyaOlustur
 import com.example.paylasim.login.LoginActivity
 import com.example.paylasim.mesajlar.chat
 import com.example.paylasim.models.kampanya
+import com.example.paylasim.models.konumlar
 import com.example.paylasim.models.kullaniciKampanya
 import com.example.paylasim.profil.profil
 import com.example.paylasim.profil.profilAyarlarActivity
@@ -33,23 +35,13 @@ import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayList<kullaniciKampanya>):RecyclerView.Adapter<mainActivityRecyclerAdapter.MyViewHolder>() {
+class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayList<kullaniciKampanya>,var tumKonumlar:ArrayList<konumlar>):RecyclerView.Adapter<mainActivityRecyclerAdapter.MyViewHolder>() {
 
 
 
 
 
-    init {
-        Collections.sort(tumKampanyalar,object :Comparator<kullaniciKampanya>{
-            override fun compare(p0: kullaniciKampanya?, p1: kullaniciKampanya?): Int {
-                if (p0!!.postYuklenmeTarih!!>p1!!.postYuklenmeTarih!!){
-                    return -1
-                }else return 1
-            }
 
-        })
-
-    }
 
 
 
@@ -72,16 +64,42 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
         var postMenu=tumLayout.post_mesaj
         var myMainActivity = mainActivity
         var geriSayim=tumLayout.geri_sayim_id
+        var mesafe=tumLayout.tw_mesafe
 
 
 
 
 
         @SuppressLint("SetTextI18n")
-        fun setData(position: Int, anlikGonderi: kullaniciKampanya) {
+        fun setData(position: Int, anlikGonderi: kullaniciKampanya,anlikkonumlar: konumlar) {
 
             userNameTitle.setText(anlikGonderi.userName)
+
+            if (anlikGonderi.isletmeLatitude!=0.0 && anlikGonderi.isletmeLongitude!=0.0){
+
+                val startPoint = Location("locationA")
+                startPoint.setLatitude(anlikGonderi.isletmeLatitude!!)
+                startPoint.setLongitude(anlikGonderi.isletmeLongitude!!)
+
+                val endPoint = Location("locationA")
+                endPoint.setLatitude(anlikkonumlar.kullaniciLatitude!!)
+                endPoint.setLongitude(anlikkonumlar.kullaniciLongitude!!)
+
+                val distance: Int = startPoint.distanceTo(endPoint).toDouble().toInt()
+
+                mesafe.setText(distance.toString()+"   metre")
+
+            }
+
+
+
+
+
             imageLoader.setImage(anlikGonderi.userPhotoURL!!,profileImage,null,"")
+
+
+
+            // Picasso.get().load(anlikGonderi.userPhotoURL).fit().centerCrop().into(profileImage)
 
 
 
@@ -90,62 +108,65 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
             Picasso.get().load(anlikGonderi.postURL).fit().centerCrop().into(gonderi)
 
 
-            kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
+           kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
 
-            Log.e("murat","gerisayimadapter"+anlikGonderi.geri_sayim.toString())
 
             if (anlikGonderi.geri_sayim=="1 saat"){
 
-                var mref = FirebaseDatabase.getInstance().reference
-                var currentID = FirebaseAuth.getInstance().currentUser!!.uid
+                var time = anlikGonderi.postYuklenmeTarih
+                if (time != null) {
+                    if (time < 1000000000000L) {
+                        // if timestamp given in seconds, convert to millis
+                        time *= 1000
+                    }
+                }
+                val now = System.currentTimeMillis()
+                if (time != null) {
+                    if (time > now || time <= 0) {
 
 
-                mref.child("kampanya").child(currentID).addListenerForSingleValueEvent(object :ValueEventListener{
-                    override fun onDataChange(snapshot: DataSnapshot) {
+                    }else{
 
-                        if (snapshot!!.hasChildren()){
-                            for (ds in snapshot!!.children){
-                                var kalanSure= ds.getValue(kampanya::class.java)!!.geri_sayim
-
-                            }
-
+                        val difff =  now - time!!
+                        if (difff>=1800000){
+                            geriSayim.setText("kampanya süresi doldu!")
 
 
                         }
+
+
+                        object : CountDownTimer(1800000-difff, 1000) {
+
+                            override fun onTick(millisUntilFinished: Long) {
+                                var diff = millisUntilFinished
+                                val secondsInMilli: Long = 1000
+                                val minutesInMilli = secondsInMilli * 60
+                                val hoursInMilli = minutesInMilli * 60
+
+
+                                val elapsedHours = diff / hoursInMilli
+                                diff %= hoursInMilli
+
+                                val elapsedMinutes = diff / minutesInMilli
+                                diff %= minutesInMilli
+
+                                val elapsedSeconds = diff / secondsInMilli
+
+
+
+                                geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
+
+                            }
+
+                            override fun onFinish() {
+                                geriSayim.setText("kampanya süresi doldu!")
+                            }
+
+                        }.start()
+
+
                     }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-
-                })
-
-
-                object : CountDownTimer(1800000, 1000) {
-
-                    override fun onTick(millisUntilFinished: Long) {
-                        var diff = millisUntilFinished
-                        val secondsInMilli: Long = 1000
-                        val minutesInMilli = secondsInMilli * 60
-                        val hoursInMilli = minutesInMilli * 60
-
-
-                        val elapsedHours = diff / hoursInMilli
-                        diff %= hoursInMilli
-
-                        val elapsedMinutes = diff / minutesInMilli
-                        diff %= minutesInMilli
-
-                        val elapsedSeconds = diff / secondsInMilli
-
-                        geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
-
-                    }
-
-                    override fun onFinish() {
-                        geriSayim.setText("kampanya süresi doldu!")
-                    }
-
-                }.start()
+                }
 
 
             }
@@ -218,7 +239,6 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
                 yorumlarFragmentiniBaslat(anlikGonderi)
 
-                bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
 
 
 
@@ -436,7 +456,12 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.setData(position, tumKampanyalar.get(position))
+
+            holder.setData(position, tumKampanyalar.get(position),tumKonumlar.get(position))
+            Log.e("tumkonumlar","getposition:"+tumKonumlar.get(position))
+
+
+
 
 
     }

@@ -35,7 +35,7 @@
         android:layout_width="72dp"
         android:layout_height="60dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/ic_launcher_mesaj_foreground"
+        android:background="@drawable/ic_launcher_mesaj2_foreground"
         app:layout_constraintBottom_toBottomOf="@+id/kullaniciAdiTepe"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/kullaniciAdiTepe"></ImageView>
@@ -71,32 +71,17 @@
         app:srcCompat="@drawable/ic_launcher_yorum" />
 
     <TextView
-        android:id="@+id/textView15"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Kalan Süre:"
-        android:textColor="#090808"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/img_yorum"
-        app:layout_constraintStart_toEndOf="@+id/img_yorum"
-        app:layout_constraintTop_toTopOf="@+id/img_yorum" />
-
-    <TextView
         android:id="@+id/geri_sayim_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginEnd="4dp"
         android:text=""
         android:textColor="@color/black"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView15"
+        app:layout_constraintBottom_toBottomOf="@+id/img_yorum"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.155"
-        app:layout_constraintStart_toEndOf="@+id/textView15"
-        app:layout_constraintTop_toTopOf="@+id/textView15"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toEndOf="@+id/img_yorum"
+        app:layout_constraintTop_toTopOf="@+id/img_yorum" />
 
     <TextView
         android:id="@+id/textView21"
@@ -147,6 +132,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView21"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tw_mesafe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi_id"
+        app:layout_constraintStart_toEndOf="@+id/kampanyaTarihi_id"
+        app:layout_constraintTop_toTopOf="@+id/kampanyaTarihi_id" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

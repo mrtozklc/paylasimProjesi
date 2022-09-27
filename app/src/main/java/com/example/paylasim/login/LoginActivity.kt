@@ -12,12 +12,17 @@ import androidx.core.content.ContextCompat
 import com.example.paylasim.R
 import com.example.paylasim.login.RegisterActivity
 import com.example.paylasim.home.MainActivity
+import com.example.paylasim.mesajlar.chat
+import com.example.paylasim.mesajlar.mesajlar
 import com.example.paylasim.models.kullanicilar
+import com.example.paylasim.service.messagingService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.iid.FirebaseInstanceIdReceiver
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.fragment_email_onay.*
 
@@ -95,7 +100,7 @@ class LoginActivity : AppCompatActivity() {
 
         var kullaniciBulundu=false
 
-        mref.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
+        mref.child("users").child("isletmeler").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
 
             }
@@ -109,17 +114,47 @@ class LoginActivity : AppCompatActivity() {
 
                         if (!okunanKullanici!!.email!!.isNullOrEmpty() && okunanKullanici!!.email!!.toString().equals(emailPhoneNumberUserName)) {
 
-                            oturumAc(okunanKullanici, sifre, false)
+                            oturumAc(okunanKullanici, sifre)
                             kullaniciBulundu=true
                             break
 
                         } else if (!okunanKullanici!!.user_name!!.isNullOrEmpty() && okunanKullanici!!.user_name!!.toString().equals(emailPhoneNumberUserName)) {
-                            oturumAc(okunanKullanici, sifre, false)
+                            oturumAc(okunanKullanici, sifre)
                             kullaniciBulundu=true
                             break
-                        } else if (!okunanKullanici!!.phone_number!!.isNullOrEmpty() && okunanKullanici!!.phone_number!!.toString().equals(emailPhoneNumberUserName)) {
+                        }
 
-                            oturumAc(okunanKullanici, sifre, true)
+                    }
+
+                    if(kullaniciBulundu==false){
+                        Toast.makeText(this@LoginActivity,"Kullanıcı Bulunamadı", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+
+
+        })
+        mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                if(snapshot!!.getValue() != null ){
+                    for (ds in snapshot!!.children) {
+
+                        var okunanKullanici = ds.getValue(kullanicilar::class.java)
+
+                        if (!okunanKullanici!!.email!!.isNullOrEmpty() && okunanKullanici!!.email!!.toString().equals(emailPhoneNumberUserName)) {
+
+                            oturumAc(okunanKullanici, sifre)
+                            kullaniciBulundu=true
+                            break
+
+                        } else if (!okunanKullanici!!.user_name!!.isNullOrEmpty() && okunanKullanici!!.user_name!!.toString().equals(emailPhoneNumberUserName)) {
+                            oturumAc(okunanKullanici, sifre)
                             kullaniciBulundu=true
                             break
                         }
@@ -137,22 +172,24 @@ class LoginActivity : AppCompatActivity() {
         })
 
 
+
     }
 
-    private fun oturumAc(okunanKullanici: kullanicilar, sifre: String, telefonlagiris: Boolean) {
+    private fun oturumAc(okunanKullanici: kullanicilar, sifre: String) {
+
         var girisYapacakEmail = ""
 
-        if (telefonlagiris) {
-            girisYapacakEmail = okunanKullanici.email_phone_number.toString()
 
-        } else {
             girisYapacakEmail = okunanKullanici.email.toString()
-        }
+
 
         auth.signInWithEmailAndPassword(girisYapacakEmail, sifre)
             .addOnCompleteListener(object : OnCompleteListener<AuthResult> {
                 override fun onComplete(p0: Task<AuthResult>) {
                     if (p0.isSuccessful) {
+
+
+                        fcmTokenAl()
                         Toast.makeText(
                             this@LoginActivity,"Hoşgeldiniz:" + okunanKullanici.user_name,Toast.LENGTH_LONG).show()
 
@@ -166,6 +203,82 @@ class LoginActivity : AppCompatActivity() {
                 }
 
             })
+
+    }
+
+    private fun fcmTokenAl() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                return@OnCompleteListener
+            }
+
+            var token=task.result
+
+            newTokenAl(token)
+
+
+
+        })
+    }
+
+
+    private fun newTokenAl(newToken: String) {
+
+        if (FirebaseAuth.getInstance().currentUser!=null){
+
+            FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot!!.getValue() != null) {
+
+                        for (user in snapshot!!.children) {
+
+
+                            var okunanKullanici = user.getValue(kullanicilar::class.java)
+                            if (okunanKullanici!!.user_id!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
+
+                                FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
+
+
+
+                            }
+                        }
+                    }
+                    FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").addListenerForSingleValueEvent(object:ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot!!.getValue() != null) {
+
+                                for (user in snapshot!!.children) {
+
+
+                                    var okunanKullanici = user.getValue(kullanicilar::class.java)
+                                    Log.e("newtoken","okunankullanici"+okunanKullanici)
+
+                                    if (okunanKullanici!!.user_id!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
+
+                                        FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
+
+
+
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+
+                    })
+
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
+
+
+        }
 
     }
 
@@ -218,5 +331,6 @@ class LoginActivity : AppCompatActivity() {
             auth.removeAuthStateListener(mauthLis)
 
         }
+
     }
 }

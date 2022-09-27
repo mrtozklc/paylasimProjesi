@@ -2,6 +2,7 @@ package com.example.paylasim.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,6 +64,8 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
             userNameTitle.setText(anlikGonderi.userName)
             imageLoader.setImage(anlikGonderi.userPhotoURL!!, profileImage, null, "")
+            Log.e("murat","profilpp"+anlikGonderi.postURL)
+
 
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())

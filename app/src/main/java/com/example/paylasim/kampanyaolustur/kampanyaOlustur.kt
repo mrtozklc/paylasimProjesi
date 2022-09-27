@@ -2,6 +2,7 @@ package com.example.paylasim.kampanyaolustur
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -43,6 +44,10 @@ class kampanyaOlustur : AppCompatActivity() {
     private lateinit var db:DatabaseReference
     private lateinit var auth: FirebaseAuth
 
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kampanya_olustur)
@@ -59,167 +64,185 @@ class kampanyaOlustur : AppCompatActivity() {
 
 
 
-        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, timer)
-        spinner!!.setAdapter(spinnerAdapter)
-
-
-        spinner!!.setOnItemSelectedListener(object :AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
-              secilenSure = spinner!!.selectedItem.toString()
-
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-
-        })
-
-
-
-
-    }
-
-
-
-    fun paylasimyap(view: View) {
-
-        secilenSure = spinner!!.selectedItem.toString()
-
-        val intent=Intent(this,mainActivityRecyclerAdapter::class.java)
-        intent.putExtra("time", secilenSure)
-        Log.e("murat","murat"+secilenSure)
-
-
-
-        val uuid = UUID.randomUUID()
-        val gorselismi = "${uuid}.jpg"
-        val reference = storage.reference
-        val gorselreference = reference.child("images").child(gorselismi)
-
-
-        if (secilengorsel!=null){
-            gorselreference.putFile(secilengorsel!!).addOnSuccessListener { taskSnapshot->
-                val yuklenengorselreference=
-                    FirebaseStorage.getInstance().reference.child("images").child(gorselismi)
-                yuklenengorselreference.downloadUrl.addOnSuccessListener { uri->
-                    val downloadurl=uri.toString()
-                    veritabaninakaydet(downloadurl)
-
-
-                }.addOnFailureListener {  exception->
-                    Toast.makeText(this, exception.localizedMessage, Toast.LENGTH_LONG).show()
-
-                }
-
-
-
-            }
-
-
-
-        }else{
-            Toast.makeText(this,"Lütfen Fotoğraf Yükleyiniz",Toast.LENGTH_LONG).show()
-
-
-
-
-        }
-
-    }
 
 
 
 
 
-    private fun veritabaninakaydet(downloadurl:String?){
-        var postID = db.child("kampanya").child(auth.uid!!).push().key
-        var yuklenenPost = kampanya(auth.uid, postID, 0,aciklama_id.text.toString(),secilenSure, downloadurl)
 
 
-        db.child("kampanya").child(auth.uid!!).child(postID!!).setValue(yuklenenPost)
-        db.child("kampanya").child(auth.uid!!).child(postID).child("yuklenme_tarih").setValue(ServerValue.TIMESTAMP)
-        Toast.makeText(this,"Kampanya Oluşturuldu",Toast.LENGTH_LONG).show()
 
 
-        if(!aciklama_id.text.toString().isNullOrEmpty()){
-
-            db.child("yorumlar").child(postID).child(postID).child("user_id").setValue(auth.uid)
-            db.child("yorumlar").child(postID).child(postID).child("yorum_tarih").setValue(ServerValue.TIMESTAMP)
-            db.child("yorumlar").child(postID).child(postID).child("yorum").setValue(aciklama_id.text.toString())
-            db.child("yorumlar").child(postID).child(postID).child("yorum_begeni").setValue("0")
-
-        }
-        kampanyaSayisiniGuncelle()
-
-        val intent=Intent(this,MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-        startActivity(intent)
-        finish()
+ val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, timer)
+ spinner!!.setAdapter(spinnerAdapter)
 
 
-    }
+ spinner!!.setOnItemSelectedListener(object :AdapterView.OnItemSelectedListener{
+     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
-    private fun kampanyaSayisiniGuncelle() {
+       secilenSure = spinner!!.selectedItem.toString()
 
-        db.child("users").child(auth.uid!!).child("user_detail").addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var oankiGonderiSayisi=snapshot!!.child("post").getValue().toString().toInt()
-                oankiGonderiSayisi++
-                db.child("users").child(auth.uid!!).child("user_detail").child("post").setValue(oankiGonderiSayisi.toString())
-            }
+     }
 
-            override fun onCancelled(error: DatabaseError) {
-            }
+     override fun onNothingSelected(p0: AdapterView<*>?) {
+     }
 
-        })
-    }
+ })
 
 
-    fun gorselsec(view: View){
-        if(ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),1)
 
 
-        }else{
-            val galeriintent= Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(galeriintent,2)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if(requestCode==1){
-            if(grantResults.size>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
-                val galeriintent= Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                startActivityForResult(galeriintent,2)
-            }
-        }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(requestCode==2&& resultCode== Activity.RESULT_OK&& data!=null){
-            secilengorsel= data.data
-            if(secilengorsel!=null){
-                if (Build.VERSION.SDK_INT>=28){
-                    val source= ImageDecoder.createSource(this.contentResolver,secilengorsel!!)
-                    secilenbitmap= ImageDecoder.decodeBitmap(source)
-                    imageView4.setImageBitmap(secilenbitmap)
-
-                }else{
-                    secilenbitmap=
-                        MediaStore.Images.Media.getBitmap(this.contentResolver,secilengorsel)
-                    imageView4.setImageBitmap(secilenbitmap) }
+}
 
 
-            }
 
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
+fun paylasimyap(view: View) {
+
+ btn_paylas.isEnabled=false
+
+
+ secilenSure = spinner!!.selectedItem.toString()
+
+ val intent=Intent(this,mainActivityRecyclerAdapter::class.java)
+ intent.putExtra("time", secilenSure)
+
+
+
+ val uuid = UUID.randomUUID()
+ val gorselismi = "${uuid}.jpg"
+ val reference = storage.reference
+ val gorselreference = reference.child("images").child(gorselismi)
+
+
+ if (secilengorsel!=null){
+     gorselreference.putFile(secilengorsel!!).addOnSuccessListener { taskSnapshot->
+         val yuklenengorselreference=
+             FirebaseStorage.getInstance().reference.child("images").child(gorselismi)
+         yuklenengorselreference.downloadUrl.addOnSuccessListener { uri->
+             val downloadurl=uri.toString()
+             veritabaninakaydet(downloadurl)
+
+
+         }.addOnFailureListener {  exception->
+             Toast.makeText(this, exception.localizedMessage, Toast.LENGTH_LONG).show()
+
+         }
+
+
+
+     }
+
+
+
+ }else{
+     Toast.makeText(this,"Lütfen Fotoğraf Yükleyiniz",Toast.LENGTH_LONG).show()
+
+
+
+
+ }
+
+
+}
+
+
+
+
+
+
+
+private fun veritabaninakaydet(downloadurl:String?){
+
+
+
+
+ var postID = db.child("kampanya").child(auth.uid!!).push().key
+ var yuklenenPost = kampanya(auth.uid, postID, 0,aciklama_id.text.toString(),secilenSure, downloadurl)
+
+
+ db.child("kampanya").child(auth.uid!!).child(postID!!).setValue(yuklenenPost)
+ db.child("kampanya").child(auth.uid!!).child(postID).child("yuklenme_tarih").setValue(ServerValue.TIMESTAMP)
+ Toast.makeText(this,"Kampanya Oluşturuldu",Toast.LENGTH_LONG).show()
+
+
+ if(!aciklama_id.text.toString().isNullOrEmpty()){
+
+     db.child("yorumlar").child(postID).child(postID).child("user_id").setValue(auth.uid)
+     db.child("yorumlar").child(postID).child(postID).child("yorum_tarih").setValue(ServerValue.TIMESTAMP)
+     db.child("yorumlar").child(postID).child(postID).child("yorum").setValue(aciklama_id.text.toString())
+     db.child("yorumlar").child(postID).child(postID).child("yorum_begeni").setValue("0")
+
+ }
+ kampanyaSayisiniGuncelle()
+
+ val intent=Intent(this,MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+ startActivity(intent)
+ finish()
+
+
+}
+
+private fun kampanyaSayisiniGuncelle() {
+
+ db.child("users").child("isletmeler").child(auth.uid!!).child("user_detail").addListenerForSingleValueEvent(object :ValueEventListener{
+     override fun onDataChange(snapshot: DataSnapshot) {
+         var oankiGonderiSayisi=snapshot!!.child("post").getValue().toString().toInt()
+         oankiGonderiSayisi++
+         db.child("users").child("isletmeler").child(auth.uid!!).child("user_detail").child("post").setValue(oankiGonderiSayisi.toString())
+     }
+
+     override fun onCancelled(error: DatabaseError) {
+     }
+
+ })
+}
+
+
+fun gorselsec(view: View){
+ if(ContextCompat.checkSelfPermission(this,
+         Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),1)
+
+
+ }else{
+     val galeriintent= Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+     startActivityForResult(galeriintent,2)
+ }
+}
+
+override fun onRequestPermissionsResult(
+ requestCode: Int,
+ permissions: Array<out String>,
+ grantResults: IntArray
+) {
+ if(requestCode==1){
+     if(grantResults.size>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
+         val galeriintent= Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+         startActivityForResult(galeriintent,2)
+     }
+ }
+
+ super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+}
+
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+ if(requestCode==2&& resultCode== Activity.RESULT_OK&& data!=null){
+     secilengorsel= data.data
+     if(secilengorsel!=null){
+         if (Build.VERSION.SDK_INT>=28){
+             val source= ImageDecoder.createSource(this.contentResolver,secilengorsel!!)
+             secilenbitmap= ImageDecoder.decodeBitmap(source)
+             imageView4.setImageBitmap(secilenbitmap)
+
+         }else{
+             secilenbitmap=
+                 MediaStore.Images.Media.getBitmap(this.contentResolver,secilengorsel)
+             imageView4.setImageBitmap(secilenbitmap) }
+
+
+     }
+
+ }
+ super.onActivityResult(requestCode, resultCode, data)
+}
 }

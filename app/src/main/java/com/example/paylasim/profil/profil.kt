@@ -55,7 +55,7 @@ class profil : AppCompatActivity() {
     private fun verileriGetir(kullanicid: String) {
 
 
-        mref.child("users").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
+        mref.child("users").child("isletmeler").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
 
                 var userID=kullanicid
@@ -108,6 +108,64 @@ class profil : AppCompatActivity() {
 
         })
 
+        mref.child("users").child("kullanicilar").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                if (snapshot!!.getValue()!=null){
+                    var userID=kullanicid
+                    var kullaniciadi=snapshot.getValue(kullanicilar::class.java)!!.user_name
+                    var photoURL=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture
+
+                    mref.child("kampanya").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot!!.hasChildren()){
+
+                                for (ds in snapshot!!.children){
+                                    var eklenecekUserPost= kullaniciKampanya()
+                                    eklenecekUserPost.userID=userID
+                                    eklenecekUserPost.userName=kullaniciadi
+                                    eklenecekUserPost.userPhotoURL=photoURL
+                                    eklenecekUserPost.postID=ds.getValue(kampanya::class.java)!!.post_id
+                                    eklenecekUserPost.postURL=ds.getValue(kampanya::class.java)!!.file_url
+                                    eklenecekUserPost.postAciklama=ds.getValue(kampanya::class.java)!!.aciklama
+                                    eklenecekUserPost.postYuklenmeTarih=ds.getValue(kampanya::class.java)!!.yuklenme_tarih
+
+                                    tumGonderiler.add(eklenecekUserPost)
+
+
+
+
+
+
+
+                                }
+
+                            }
+                            val layoutManager= LinearLayoutManager(this@profil)
+                            recyclerProfil.layoutManager=layoutManager
+                            recyclerviewadapter= profilActivityRecyclerAdapter(this@profil,tumGonderiler)
+                            recyclerProfil.adapter=recyclerviewadapter
+
+
+
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+
+                    })
+
+                }
+
+
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
 
     }
     override fun onBackPressed() {
@@ -121,7 +179,7 @@ class profil : AppCompatActivity() {
 
         tv_Mesaj.isEnabled=false
 
-        mref.child("users").child(muser!!.uid).addValueEventListener(object :ValueEventListener{
+        mref.child("users").child("isletmeler").child(muser!!.uid).addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot!!.getValue()!=null){
                     var okunanKullanici=snapshot!!.getValue(kullanicilar::class.java)
@@ -132,6 +190,33 @@ class profil : AppCompatActivity() {
                     tv_kullaniciAdi
                         .setText(okunanKullanici!!.user_name)
                     tv_post.setText(okunanKullanici!!.user_detail!!.post)
+                    if (!okunanKullanici!!.user_detail!!.biography.isNullOrEmpty()){
+                        tv_bio.setText(okunanKullanici!!.user_detail!!.biography)
+
+
+                    }
+
+                    var imgUrl:String=okunanKullanici!!.user_detail!!.profile_picture!!
+                    imageLoader.setImage(imgUrl,profile_image,null,"")
+
+
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+        mref.child("users").child("kullanicilar").child(muser!!.uid).addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot!!.getValue()!=null){
+                    var okunanKullanici=snapshot!!.getValue(kullanicilar::class.java)
+                    EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
+
+                    tv_Mesaj.isEnabled=true
+
+                    tv_kullaniciAdi.setText(okunanKullanici!!.user_name)
+                      tv_post.setText(okunanKullanici!!.user_detail!!.post)
                     if (!okunanKullanici!!.user_detail!!.biography.isNullOrEmpty()){
                         tv_bio.setText(okunanKullanici!!.user_detail!!.biography)
 

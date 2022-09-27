@@ -31,8 +31,9 @@
         android:background="@drawable/register_edit_text"
         android:ems="10"
         android:hint="Adın ve soyadın"
-        android:inputType="textPersonName"
         android:padding="16dp"
+
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"

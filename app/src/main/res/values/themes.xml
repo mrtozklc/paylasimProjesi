@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Paylasim" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Paylasim" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#EFEFF0</item>
+        <item name="colorPrimary">#EBEBED</item>
         <item name="colorPrimaryVariant">#0E0B13</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->

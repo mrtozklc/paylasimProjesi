@@ -3,7 +3,9 @@ package com.example.paylasim.mesajlar
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,8 +41,8 @@ class mesajlar : AppCompatActivity() {
 
 
 
-
-
+        progressBarMesajlar.visibility= View.VISIBLE
+        recyclerMesajlar.visibility=View.INVISIBLE
         setAdapter()
 
 
@@ -56,12 +58,28 @@ class mesajlar : AppCompatActivity() {
         mrecyclerview.layoutManager=mlinearlayoutmanager
         mrecyclerview.adapter=madapter
 
+
+
         konusmalariGetir()
     }
 
     private fun konusmalariGetir() {
 
      mref.child("konusmalar").child(auth.currentUser!!.uid).orderByChild("gonderilmeZamani").addChildEventListener(mListener)
+
+        object : CountDownTimer(1000,1000){
+            override fun onFinish() {
+
+                progressBarMesajlar.visibility= View.GONE
+                recyclerMesajlar.visibility=View.VISIBLE
+
+            }
+
+            override fun onTick(p0: Long) {
+
+            }
+
+        }.start()
 
     }
     private var mListener=object :ChildEventListener{

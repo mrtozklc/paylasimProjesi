@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".profil.sifreDegistirFragment">
+
+
+  <TextView
+      android:id="@+id/sadasd"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="şifre değiştir"
+      android:textColor="@color/black"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toBottomOf="@+id/sifre_onay"
+      app:layout_constraintEnd_toStartOf="@+id/sifre_back"
+      app:layout_constraintStart_toEndOf="@+id/sifre_onay"
+      app:layout_constraintTop_toTopOf="@+id/sifre_onay"
+      app:layout_constraintVertical_bias="0.619"></TextView>
+
+  <View
+      android:id="@+id/sifre_onay"
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+
+      android:background="@drawable/ic_launcher_check"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"></View>
+
+  <View
+      android:id="@+id/sifre_back"
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="16dp"
+      android:background="@drawable/ic_launcher_closed"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"></View>
+
+  <EditText
+      android:id="@+id/mevcutSifre_id"
+
+      android:hint="mevcut şifre"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="16dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="32dp"
+      android:background="@drawable/register_edit_text"
+      android:ems="10"
+      android:padding="16dp"
+
+      android:inputType="textPassword"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/viewasda"></EditText>
+
+  <EditText
+      android:id="@+id/yeniSifre_id"
+
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="16dp"
+      android:background="@drawable/register_edit_text"
+      android:ems="10"
+      android:hint="yeni şifre tekrar"
+      android:inputType="textPassword"
+
+
+      android:padding="16dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="1.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/tekrarSifre_id"></EditText>
+
+  <EditText
+      android:id="@+id/tekrarSifre_id"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="16dp"
+      android:background="@drawable/register_edit_text"
+      android:ems="10"
+      android:hint="yeni Şifre"
+
+
+      android:inputType="textPassword"
+
+      android:padding="16dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/mevcutSifre_id"></EditText>
+
+  <View
+      android:id="@+id/viewasda"
+      android:layout_width="wrap_content"
+      android:layout_height="1dp"
+      android:layout_marginTop="16dp"
+      android:backgroundTint="@color/gri"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/sifre_onay" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

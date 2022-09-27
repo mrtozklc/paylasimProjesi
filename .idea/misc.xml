@@ -15,20 +15,24 @@
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/drawable/mesaj_alan_bg.xml" value="0.2045" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/drawable/mesaj_gonderen_bg.xml" value="0.2045" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/drawable/register_edit_text.xml" value="0.2095" />
-        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_bildirim.xml" value="0.1" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_bildirim.xml" value="0.18" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_chat.xml" value="0.2" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_isletme_kayit_bilgileri.xml" value="0.2248995983935743" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_kampanya_olustur.xml" value="0.14" />
-        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_login.xml" value="0.15" />
-        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_login.xml" value="0.22" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_login_isletme.xml" value="0.1675929884566054" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_mesajlar.xml" value="0.1675929884566054" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_profil.xml" value="0.25" />
-        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_profil_ayarlar.xml" value="0.25" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_profil_ayarlar.xml" value="0.17374517374517376" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_register.xml" value="0.15" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/activity_user_profil.xml" value="0.32104832104832104" />
-        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_email_onay.xml" value="0.25" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_email_onay.xml" value="0.18072289156626506" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_isletme_kayit_bilgileri.xml" value="0.21" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_login.xml" value="0.18" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_onay_kodu.xml" value="0.4899598393574297" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_profil_edit.xml" value="0.153125" />
+        <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_sifre_degistir.xml" value="0.33" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_yorumlar.xml" value="0.29772727272727273" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/fragment_yukleniyor.xml" value="0.25" />
         <entry key="..\:/Users/mrtoz/AndroidStudioProjects/paylasim/app/src/main/res/layout/mesaj_alan_recycler_row.xml" value="0.2" />

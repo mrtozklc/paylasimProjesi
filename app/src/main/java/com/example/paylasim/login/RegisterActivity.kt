@@ -16,8 +16,10 @@ import com.example.paylasim.home.MainActivity
 import com.example.paylasim.models.kullanicilar
 import com.example.paylasim.util.EventbusData
 import com.example.paylasim.util.imageLoader
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import com.nostra13.universalimageloader.core.ImageLoader
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
@@ -61,9 +63,9 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
             view2.visibility = View.VISIBLE
             view_eposta.visibility = View.INVISIBLE
             editTextTextPersonName.setText("")
-            editTextTextPersonName.inputType = InputType.TYPE_CLASS_NUMBER
-            editTextTextPersonName.setHint("TELEFON")
-            button2.isEnabled = false
+            editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            editTextTextPersonName.setHint("e-posta")
+            btn_kayit.isEnabled = false
 
 
         }
@@ -75,7 +77,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
             editTextTextPersonName.setText("")
             editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             editTextTextPersonName.setHint("E-POSTA")
-            button2.isEnabled = false
+            btn_kayit.isEnabled = false
 
 
         }
@@ -87,14 +89,14 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (p0!!.length >= 10) {
-                    button2.isEnabled = true
-                    button2.setTextColor(
+                    btn_kayit.isEnabled = true
+                    btn_kayit.setTextColor(
                         ContextCompat.getColor(
                             this@RegisterActivity,
                             R.color.white
                         )
                     )
-                    button2.setBackgroundColor(
+                    btn_kayit.setBackgroundColor(
                         ContextCompat.getColor(
                             this@RegisterActivity,
                             R.color.teal_700
@@ -103,7 +105,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
 
                 } else {
-                    button2.isEnabled = false
+                    btn_kayit.isEnabled = false
 
 
                 }
@@ -117,135 +119,479 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
         })
 
-        button2.setOnClickListener {
+        btn_kayit.setOnClickListener {
 
-            if(editTextTextPersonName.hint.toString().equals("TELEFON")){
+            if(editTextTextPersonName.hint.toString().equals("e-posta")){
 
-                var ceptelefonuKullanimdaMi=false
 
-                if(checkTelefon(editTextTextPersonName.text.toString())){
 
-                    mref.child("users").addListenerForSingleValueEvent(object : ValueEventListener{
-                        override fun onCancelled(error: DatabaseError) {
 
-                        }
 
-                        override fun onDataChange(snapshot: DataSnapshot) {
 
-                            if(snapshot!!.getValue()!=null){
+                if (checkMail(editTextTextPersonName.text.toString())) {
 
-                                for(user in snapshot!!.children){
+                    var emailKullanimdaMi = false
 
-                                    var okunanKullanici=user.getValue(kullanicilar::class.java)
-                                   if(okunanKullanici!!.phone_number!!.equals(editTextTextPersonName.text.toString())){
-                                        Toast.makeText(this@RegisterActivity,"Telefon numarası Kullanımda",Toast.LENGTH_SHORT).show()
-                                        ceptelefonuKullanimdaMi=true
-                                        break
+
+                    mref.child("users").child("isletmeler")
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onCancelled(error: DatabaseError) {
+
+                            }
+
+                            override fun onDataChange(snapshot: DataSnapshot) {
+
+                                if (snapshot!!.getValue() != null) {
+
+                                    for (user in snapshot!!.children) {
+
+
+                                        var okunanKullanici = user.getValue(kullanicilar::class.java)
+                                        if (okunanKullanici!!.email!!.equals(editTextTextPersonName.text.toString())) {
+
+
+                                            Log.e("kullaniciların","işletmebölümü"+okunanKullanici)
+
+
+
+                                            Toast.makeText(this@RegisterActivity, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+
+
+                                            emailKullanimdaMi = true
+                                            break
+                                        }
+
+
+
+
                                     }
+                                        //işletme değil kullanicilara bak
+                                        mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                if (snapshot!!.getValue()!=null){
+                                                    for (user in snapshot.children){
+
+                                                        var okunanKullanici = user.getValue(kullanicilar::class.java)
+
+                                                        if (okunanKullanici!!.email!!.equals(editTextTextPersonName.text.toString())) {
+
+                                                            Log.e("kullaniciların","kullanicibölümü"+okunanKullanici)
+
+
+                                                            Toast.makeText(this@RegisterActivity, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+
+                                                            emailKullanimdaMi = true
+                                                            break
+
+                                                        }
+
+                                                    } // kullanici bulunamadı,kaydet
+                                                    if (!emailKullanimdaMi){
+                                                        loginroot.visibility = View.GONE
+                                                        loginframe.visibility = View.VISIBLE
+                                                        var transaction =
+                                                            supportFragmentManager.beginTransaction()
+                                                        transaction.replace(
+                                                            R.id.loginframe,
+                                                            emailOnayFragment()
+                                                        )
+                                                        transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                        transaction.commit()
+                                                        EventBus.getDefault().postSticky(
+                                                            EventbusData.kayitBilgileriniGonder(
+                                                                null,
+                                                                editTextTextPersonName.text.toString(),
+                                                                null,
+                                                                null,
+                                                                true
+                                                            )
+                                                        )
+
+
+                                                    }
+                                                }
+                                                if(!emailKullanimdaMi){
+
+                                                    Log.e("veritabanında işletme var,kullanici yok ancak kayıtlı değil,kaydet","çalıstı")
+
+
+                                                    loginroot.visibility = View.GONE
+                                                    loginframe.visibility = View.VISIBLE
+                                                    var transaction = supportFragmentManager.beginTransaction()
+                                                    transaction.replace(
+                                                        R.id.loginframe,
+                                                        emailOnayFragment()
+                                                    )
+                                                    transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                    transaction.commit()
+                                                    EventBus.getDefault().postSticky(
+                                                        EventbusData.kayitBilgileriniGonder(
+                                                            null,
+                                                            editTextTextPersonName.text.toString(),
+                                                            null,
+                                                            null,
+                                                            true
+                                                        )
+                                                    )
+
+                                                }
+
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                            }
+
+                                        })
+
+
+
+
 
                                 }
 
-                                if(ceptelefonuKullanimdaMi==false){
-                                    loginroot.visibility=View.GONE
-                                    loginframe.visibility=View.VISIBLE
-                                    var transaction=supportFragmentManager.beginTransaction()
-                                    transaction.replace(R.id.loginframe,onayKoduFragment())
-                                    transaction.addToBackStack("telefonKoduGirFragmentEklendi")
-                                    transaction.commit()
-                                    EventBus.getDefault().postSticky(EventbusData.kayitBilgileriniGonder(editTextTextPersonName.text.toString(),null,null,null, false))
+                                //veritabanında hiç işletme  yok, kullanicilara bak
+                                else{
+
+                                    mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :ValueEventListener{
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+
+                                            if (snapshot!!.getValue()!=null){
+                                                for (user in snapshot!!.children){
+
+
+                                                    var okunanKullanici = user.getValue(kullanicilar::class.java)
+                                                    if (okunanKullanici!!.email!!.equals(editTextTextPersonName.text.toString())) {
+
+                                                        Log.e("işletme yok","kullanici var,bulunan kullanici"+okunanKullanici)
+                                                        Toast.makeText(this@RegisterActivity, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+
+                                                        emailKullanimdaMi = true
+                                                        break
+                                                    }
+
+
+
+                                                }
+                                                //veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet
+                                                if(!emailKullanimdaMi)
+                                                {
+                                                    Log.e("veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet","çalıstı")
+
+
+                                                    loginroot.visibility = View.GONE
+                                                    loginframe.visibility = View.VISIBLE
+                                                    var transaction = supportFragmentManager.beginTransaction()
+                                                    transaction.replace(
+                                                        R.id.loginframe,
+                                                        emailOnayFragment()
+                                                    )
+                                                    transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                    transaction.commit()
+                                                    EventBus.getDefault().postSticky(
+                                                        EventbusData.kayitBilgileriniGonder(
+                                                            null,
+                                                            editTextTextPersonName.text.toString(),
+                                                            null,
+                                                            null,
+                                                            true
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                            if  (!emailKullanimdaMi)
+                                            //veritabanında kullanicida yok direkt kaydet
+                                            {
+                                                Log.e("elsekkaydet","direktkaydetcalıstı")
+
+                                                Log.e("veritabanında kullanicida yok direkt kaydet","çalıstı")
+
+
+
+                                                loginroot.visibility = View.GONE
+                                                loginframe.visibility = View.VISIBLE
+                                                var transaction = supportFragmentManager.beginTransaction()
+                                                transaction.replace(
+                                                    R.id.loginframe,
+                                                    emailOnayFragment()
+                                                )
+                                                transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                transaction.commit()
+                                                EventBus.getDefault().postSticky(
+                                                    EventbusData.kayitBilgileriniGonder(
+                                                        null,
+                                                        editTextTextPersonName.text.toString(),
+                                                        null,
+                                                        null,
+                                                        true
+                                                    )
+                                                )
+
+                                            }
+
+
+
+                                        }
+
+                                        override fun onCancelled(error: DatabaseError) {
+                                        }
+
+                                    })
+
+
+
                                 }
 
                             }
-                            //veritabanında herhangi bir kullanıcı yok, direk kaydediliriz
-                            else{
 
-                                loginroot.visibility=View.GONE
-                                loginframe.visibility=View.VISIBLE
-                                var transaction=supportFragmentManager.beginTransaction()
-                                transaction.replace(R.id.loginframe,onayKoduFragment())
-                                transaction.addToBackStack("telefonKoduGirFragmentEklendi")
-                                transaction.commit()
-                                EventBus.getDefault().postSticky(EventbusData.kayitBilgileriniGonder(editTextTextPersonName.text.toString(),null,null,null, false))
-                            }
-
-                        }
-
-                    })
+                        })
 
 
-
-
-                }else {
-                    Toast.makeText(this,"Lütfen geçerli bir telefon numarası giriniz",Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Lütfen geçerli bir E-mail  giriniz",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
 
             }
             else {
 
-                if(checkMail(editTextTextPersonName.text.toString())){
-
-                    var emailKullanimdaMi=false
 
 
-                    mref.child("users").addListenerForSingleValueEvent(object : ValueEventListener{
-                        override fun onCancelled(error: DatabaseError) {
+                    if (checkMail(editTextTextPersonName.text.toString())) {
 
-                        }
+                        var emailKullanimdaMi = false
 
-                        override fun onDataChange(snapshot: DataSnapshot) {
 
-                            if(snapshot!!.getValue() != null){
+                        mref.child("users").child("isletmeler")
+                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onCancelled(error: DatabaseError) {
 
-                                for(user in snapshot!!.children){
+                                }
 
-                                    var okunanKullanici=user.getValue(kullanicilar::class.java)
-                                    if (okunanKullanici!!.email!!.equals(editTextTextPersonName.text.toString())){
-                                        Toast.makeText(this@RegisterActivity,"Email Kullanımda",Toast.LENGTH_SHORT).show()
-                                        emailKullanimdaMi=true
-                                        break
+                                override fun onDataChange(snapshot: DataSnapshot) {
+
+                                    if (snapshot!!.getValue() != null) {
+
+                                        for (user in snapshot!!.children) {
+
+
+                                            var okunanKullanici = user.getValue(kullanicilar::class.java)
+                                            if (okunanKullanici!!.email!!.equals(editTextTextPersonName.text.toString())) {
+
+
+                                                Log.e("kullaniciların","işletmebölümü"+okunanKullanici)
+
+
+
+                                                Toast.makeText(this@RegisterActivity, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+
+
+                                                emailKullanimdaMi = true
+                                                break
+                                            }
+
+
+
+
+                                        }
+                                        //işletme değil kullanicilara bak
+                                        mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                if (snapshot!!.getValue()!=null){
+                                                    for (user in snapshot.children){
+
+                                                        var okunanKullanici = user.getValue(kullanicilar::class.java)
+
+                                                        if (okunanKullanici!!.email!!.equals(editTextTextPersonName.text.toString())) {
+
+                                                            Log.e("kullaniciların","kullanicibölümü"+okunanKullanici)
+
+
+                                                            Toast.makeText(this@RegisterActivity, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+
+                                                            emailKullanimdaMi = true
+                                                            break
+
+                                                        }
+
+                                                    } // kullanici bulunamadı,kaydet
+                                                    if (!emailKullanimdaMi){
+                                                        loginroot.visibility = View.GONE
+                                                        loginframe.visibility = View.VISIBLE
+                                                        var transaction =
+                                                            supportFragmentManager.beginTransaction()
+                                                        transaction.replace(
+                                                            R.id.loginframe,
+                                                            IsletmeKayitBilgileriFragment()
+                                                        )
+                                                        transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                        transaction.commit()
+                                                        EventBus.getDefault().postSticky(
+                                                            EventbusData.kayitBilgileriniGonder(
+                                                                null,
+                                                                editTextTextPersonName.text.toString(),
+                                                                null,
+                                                                null,
+                                                                true
+                                                            )
+                                                        )
+
+
+                                                    }
+                                                }
+                                                if(!emailKullanimdaMi){
+
+                                                    Log.e("veritabanında işletme var,kullanici yok ancak kayıtlı değil,kaydet","çalıstı")
+
+
+                                                    loginroot.visibility = View.GONE
+                                                    loginframe.visibility = View.VISIBLE
+                                                    var transaction = supportFragmentManager.beginTransaction()
+                                                    transaction.replace(
+                                                        R.id.loginframe,
+                                                        IsletmeKayitBilgileriFragment()
+                                                    )
+                                                    transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                    transaction.commit()
+                                                    EventBus.getDefault().postSticky(
+                                                        EventbusData.kayitBilgileriniGonder(
+                                                            null,
+                                                            editTextTextPersonName.text.toString(),
+                                                            null,
+                                                            null,
+                                                            true
+                                                        )
+                                                    )
+
+                                                }
+
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                            }
+
+                                        })
+
+
+
+
+
                                     }
 
+                                    //veritabanında hiç işletme  yok, kullanicilara bak
+                                    else{
+
+                                        mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+
+                                                if (snapshot!!.getValue()!=null){
+                                                    for (user in snapshot!!.children){
+
+
+                                                        var okunanKullanici = user.getValue(kullanicilar::class.java)
+                                                        if (okunanKullanici!!.email!!.equals(editTextTextPersonName.text.toString())) {
+
+                                                            Log.e("işletme yok","kullanici var,bulunan kullanici"+okunanKullanici)
+                                                            Toast.makeText(this@RegisterActivity, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+
+                                                            emailKullanimdaMi = true
+                                                            break
+                                                        }
+
+
+
+                                                    }
+                                                    //veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet
+                                                    if(!emailKullanimdaMi)
+                                                    {
+                                                        Log.e("veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet","çalıstı")
+
+
+                                                        loginroot.visibility = View.GONE
+                                                        loginframe.visibility = View.VISIBLE
+                                                        var transaction = supportFragmentManager.beginTransaction()
+                                                        transaction.replace(
+                                                            R.id.loginframe,
+                                                            IsletmeKayitBilgileriFragment()
+                                                        )
+                                                        transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                        transaction.commit()
+                                                        EventBus.getDefault().postSticky(
+                                                            EventbusData.kayitBilgileriniGonder(
+                                                                null,
+                                                                editTextTextPersonName.text.toString(),
+                                                                null,
+                                                                null,
+                                                                true
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                                if  (!emailKullanimdaMi)
+                                                //veritabanında kullanicida yok direkt kaydet
+                                                {
+                                                    Log.e("elsekkaydet","direktkaydetcalıstı")
+
+                                                    Log.e("veritabanında kullanicida yok direkt kaydet","çalıstı")
+
+
+
+                                                    loginroot.visibility = View.GONE
+                                                    loginframe.visibility = View.VISIBLE
+                                                    var transaction = supportFragmentManager.beginTransaction()
+                                                    transaction.replace(
+                                                        R.id.loginframe,
+                                                        IsletmeKayitBilgileriFragment()
+                                                    )
+                                                    transaction.addToBackStack("emailileGirisFragmentEklendi")
+                                                    transaction.commit()
+                                                    EventBus.getDefault().postSticky(
+                                                        EventbusData.kayitBilgileriniGonder(
+                                                            null,
+                                                            editTextTextPersonName.text.toString(),
+                                                            null,
+                                                            null,
+                                                            true
+                                                        )
+                                                    )
+
+                                                }
+
+
+
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                            }
+
+                                        })
+
+
+
+                                    }
 
                                 }
 
-                                if(emailKullanimdaMi==false){
-                                    loginroot.visibility=View.GONE
-                                    loginframe.visibility=View.VISIBLE
-                                    var transaction=supportFragmentManager.beginTransaction()
-                                    transaction.replace(R.id.loginframe,emailOnayFragment())
-                                    transaction.addToBackStack("emailileGirisFragmentEklendi")
-                                    transaction.commit()
-                                    EventBus.getDefault().postSticky(EventbusData.kayitBilgileriniGonder(null,editTextTextPersonName.text.toString(), null, null, true))
-                                }
-                            }
-                            //veritabanında hiç kullanıcı yok, aynen kaydet
-                            else{
+                            })
 
-                                loginroot.visibility=View.GONE
-                                loginframe.visibility=View.VISIBLE
-                                var transaction=supportFragmentManager.beginTransaction()
-                                transaction.replace(R.id.loginframe, emailOnayFragment())
-                                transaction.addToBackStack("emailileGirisFragmentEklendi")
-                                transaction.commit()
-                                EventBus.getDefault().postSticky(EventbusData.kayitBilgileriniGonder(null,editTextTextPersonName.text.toString(), null, null, true))
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Lütfen geçerli bir E-mail  giriniz",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
-                            }
-                        }
-
-                    })
-
-
-                }
-                else {
-                    Toast.makeText(this,"Lütfen geçerli bir email  giriniz",Toast.LENGTH_SHORT).show()
-                }
             }
 
         }
 
 
     }
+
+
 
 
     override fun onBackStackChanged() {
@@ -266,15 +612,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
     }
 
-    fun checkTelefon(kontrolEdilenTelefon: String): Boolean {
 
-        if (kontrolEdilenTelefon == null || kontrolEdilenTelefon.length > 11) {
-            return false
-
-        }
-        return android.util.Patterns.PHONE.matcher(kontrolEdilenTelefon).matches()
-
-    }
     private fun setupAuthLis() {
 
         mauthLis=object :FirebaseAuth.AuthStateListener{

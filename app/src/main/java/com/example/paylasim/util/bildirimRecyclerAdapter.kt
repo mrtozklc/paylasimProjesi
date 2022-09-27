@@ -69,8 +69,43 @@ class bildirimRecyclerAdapter(var mcontext:Context,var tumBildirimler:ArrayList<
 
         private fun idsiVerilenKullanicininBilgileriYorum(user_id: String?, gonderi_id: String?, bildirimZamani: Long) {
 
-                FirebaseDatabase.getInstance().getReference().child("users").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.getValue()!=null){
+
+                            if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                                begenenPP.visibility=View.GONE
+                                yorumYapildi.visibility=View.GONE
+                                kampanya.visibility=View.GONE
+
+                            }else{
+                                var userName = snapshot!!.child("user_name").getValue().toString()
+                                if (!snapshot!!.child("user_name").getValue().toString().isNullOrEmpty())
+
+                                    yorumYapildi.setText(userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
+
+
+
+
+                                if (!snapshot!!.child("user_detail").child("profile_picture").getValue().toString().isNullOrEmpty()) {
+                                    var takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
+                                    imageLoader.setImage(takipEdenPicURL, begenenPP, null, "")
+                                }
+
+                            }
+                        }
+                    }
+
+
+
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+
+                })
+
+                FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot)  {
                         if (snapshot.getValue()!=null){
 
                             if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
@@ -139,8 +174,40 @@ class bildirimRecyclerAdapter(var mcontext:Context,var tumBildirimler:ArrayList<
 
 
 
-            FirebaseDatabase.getInstance().getReference().child("users").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+            FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.getValue()!=null){
+
+                        if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                            begenenPP.visibility=View.GONE
+                            yorumYapildi.visibility=View.GONE
+                            kampanya.visibility=View.GONE
+
+                        }else{
+                            var userName = snapshot!!.child("user_name").getValue().toString()
+                            if (!snapshot!!.child("user_name").getValue().toString().isNullOrEmpty())
+
+                                gonderiBegenildi.setText(userName + " Kampanyani Beğendi .  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
+
+
+
+
+                            if (!snapshot!!.child("user_detail").child("profile_picture").getValue().toString().isNullOrEmpty()) {
+                                var takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
+                                imageLoader.setImage(takipEdenPicURL, begenenPP, null, "")
+                            }
+
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
+
+            FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot)  {
                     if (snapshot.getValue()!=null){
 
                         if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){

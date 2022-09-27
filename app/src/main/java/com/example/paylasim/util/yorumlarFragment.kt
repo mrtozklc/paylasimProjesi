@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
 import android.text.TextUtils
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -158,18 +159,46 @@ class yorumlarFragment : Fragment() {
         private fun kullaniciBilgileriniGetir(user_id: String?, yorum: String?) {
 
             var mref=FirebaseDatabase.getInstance().reference
-            mref.child("users").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+            mref.child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot!!.getValue()!=null){
+                        var userNameveYorum="<font color=#000>"+ snapshot!!.getValue(kullanicilar::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
+                        var sonuc: Spanned?=null
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                            sonuc= Html.fromHtml(userNameveYorum,Html.FROM_HTML_MODE_LEGACY)
+                        }else {
+                            sonuc=Html.fromHtml(userNameveYorum)
+                        }
+                        kullaniciAdiveYorum.setText(sonuc)
+                        imageLoader.setImage(snapshot!!.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture!!.toString(),yorumYapanUserPhoto,null,"")
 
-                    var userNameveYorum="<font color=#000>"+ snapshot!!.getValue(kullanicilar::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
-                    var sonuc: Spanned?=null
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-                        sonuc= Html.fromHtml(userNameveYorum,Html.FROM_HTML_MODE_LEGACY)
-                    }else {
-                        sonuc=Html.fromHtml(userNameveYorum)
+                    }else{
+                        Log.e("yorumlar kullanicibilgileri","kullacilar tarafı çalıştı")
                     }
-                    kullaniciAdiveYorum.setText(sonuc)
-                    imageLoader.setImage(snapshot!!.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture!!.toString(),yorumYapanUserPhoto,null,"")
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
+
+
+            mref.child("users").child("isletmeler").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot!!.getValue()!=null){
+                        var userNameveYorum="<font color=#000>"+ snapshot!!.getValue(kullanicilar::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
+                        var sonuc: Spanned?=null
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                            sonuc= Html.fromHtml(userNameveYorum,Html.FROM_HTML_MODE_LEGACY)
+                        }else {
+                            sonuc=Html.fromHtml(userNameveYorum)
+                        }
+                        kullaniciAdiveYorum.setText(sonuc)
+                        imageLoader.setImage(snapshot!!.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture!!.toString(),yorumYapanUserPhoto,null,"")
+
+                    }
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {
