@@ -33,6 +33,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_kampanya_olustur.*
+import kotlinx.android.synthetic.main.activity_kampanya_olustur.view.*
 import kotlinx.android.synthetic.main.recycler_row.*
 import java.util.*
 
@@ -96,9 +97,11 @@ class kampanyaOlustur : AppCompatActivity() {
 
 
 
-fun paylasimyap(view: View) {
+    fun paylasimyap(view: View) {
+
 
  btn_paylas.isEnabled=false
+        Log.e("TAG","tıklandı. ${btn_paylas.isEnabled}")
 
 
  secilenSure = spinner!!.selectedItem.toString()

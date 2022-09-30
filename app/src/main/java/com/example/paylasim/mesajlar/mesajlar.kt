@@ -93,6 +93,7 @@ class mesajlar : AppCompatActivity() {
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
             var kontrol =konusmaPositionBul(snapshot!!.key.toString())
+            Log.e("child","changed+"+snapshot!!.key.toString())
             if(kontrol != -1){
 
                 var guncellenecekKonusma = snapshot!!.getValue(konusmalar::class.java)
@@ -122,6 +123,8 @@ class mesajlar : AppCompatActivity() {
 
 
     private fun konusmaPositionBul(userID : String) : Int{
+
+        Log.e("konusma position","userID:"+userID)
 
         for(i in 0..tumKonusmalar.size-1){
             var gecici = tumKonusmalar.get(i)

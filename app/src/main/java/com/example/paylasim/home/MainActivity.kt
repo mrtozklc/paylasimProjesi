@@ -25,31 +25,32 @@ import com.example.paylasim.kampanyaolustur.kampanyaOlustur
 import com.example.paylasim.login.LoginActivity
 import com.example.paylasim.login.signOutFragment
 import com.example.paylasim.mesajlar.mesajlar
-import com.example.paylasim.models.*
+import com.example.paylasim.models.kampanya
+import com.example.paylasim.models.kullaniciKampanya
+import com.example.paylasim.models.kullanicilar
 import com.example.paylasim.profil.profil
 import com.example.paylasim.util.imageLoader
 import com.example.paylasim.util.mainActivityRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import com.nostra13.universalimageloader.core.ImageLoader
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth : FirebaseAuth
     lateinit var mauthLis:FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
-     var tumGonderiler=ArrayList<kullaniciKampanya>()
+    var tumGonderiler=ArrayList<kullaniciKampanya>()
     var sayfaBasiGonderiler=ArrayList<kullaniciKampanya>()
     var tumPostlar=ArrayList<String>()
-    var tumKonumlar=ArrayList<konumlar>()
     val SAYFA_BASI_GONDERI=10
     var sayfaSayisi=1
     var sayfaninSonunaGelindi = false
+
 
     private lateinit var recyclerviewadapter:mainActivityRecyclerAdapter
 
@@ -75,29 +76,24 @@ class MainActivity : AppCompatActivity() {
         locationListener=object :LocationListener{
             override fun onLocationChanged(p0: Location) {
 
-                //*********** metre cinsinden hesaplama ***************
-
-                /*  val startPoint = Location("locationA")
-                  startPoint.setLatitude(p0.latitude)
-                  startPoint.setLongitude(p0.longitude)
-
-                  val endPoint = Location("locationA")
-                  endPoint.setLatitude(41.001594999999995)
-                  endPoint.setLongitude(29.011419999999998)
-
-                  val distance: Double = startPoint.distanceTo(endPoint).toDouble()  */
-
 
                 var konum=HashMap<String,Any>()
                 konum.put("latitude",p0.latitude)
                 konum.put("longitude",p0.longitude)
+                konum.put("konumkullaniciId",auth.currentUser?.uid.toString())
 
+                mref.child("konumlar").child("kullanici_konum").child(FirebaseAuth.getInstance().currentUser!!.uid)
+                    .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(konum)
 
+            }
 
+            override fun onProviderDisabled(provider: String) {
+            }
 
+            override fun onProviderEnabled(provider: String) {
+            }
 
-                mref.child("konumlar").child("kullanici_konum").child(FirebaseAuth.getInstance().currentUser!!.uid).child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(konum)
-
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
             }
 
         }
@@ -117,29 +113,25 @@ class MainActivity : AppCompatActivity() {
         refreshMain_id.setOnRefreshListener(object :SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
 
+
                 tumGonderiler.clear()
                 sayfaBasiGonderiler.clear()
+
                 sayfaninSonunaGelindi=false
-               verileriGetir()
+
+                recyclerviewadapter.notifyDataSetChanged()
+
+
+
+                verileriGetir()
+
 
                 refreshMain_id.isRefreshing = false
 
-
-
-
-            }
+                          }
 
 
         })
-
-
-
-
-
-
-
-
-
 
 
 
@@ -179,7 +171,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun tumVerileriGetir(){
 
-        mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
+        mref.child("kampanya").addValueEventListener(object :ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
 
             }
@@ -191,7 +183,6 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     verileriGetir()
-                    konumlariGetir()
                 }
             }
 
@@ -200,60 +191,49 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun konumlariGetir(){
 
-        Log.e("ondata", "tumkonumlarsize:" + tumKonumlar.size)
+    /*private fun konumlariGetir(){
 
-
-
+        Log.e("ondata", "tumkonumlarsize:" + tumKullaniciKonumlari.size)
 
 
-        mref.child("konumlar").child("kullanici_konum").child(auth.currentUser!!.uid).addChildEventListener(object :ChildEventListener{
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    if (snapshot.getValue()!=null){
-                        Log.e("ondata", "kullanici" + snapshot)
+        mref.child("konumlar").child("kullanici_konum").child(auth.currentUser!!.uid)
+            .child(auth.currentUser!!.uid).addValueEventListener(object:ValueEventListener{
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onDataChange(snapshot: DataSnapshot) {
 
-                        var latitude=snapshot.getValue(kullaniciKonumlari::class.java)!!.latitude
-                        var longitude=snapshot.getValue(kullaniciKonumlari::class.java)!!.longitude
+                    tumKullaniciKonumlari.clear()
+                    if (snapshot.exists()){
+                        for (i in snapshot.children){
 
-                        var eklenecekKonumlar=konumlar()
-                        eklenecekKonumlar.kullaniciLatitude=latitude
-                        eklenecekKonumlar.kullaniciLongitude=longitude
+                            Log.e("ondata", "id = ${auth.currentUser?.uid}  kullanici:::: $i ::::: kullanici1" + snapshot)
 
-                        tumKonumlar.add(eklenecekKonumlar)
-                        Log.e("konumlar","tumkonumlar"+tumKonumlar)
-                        recyclerviewadapter= mainActivityRecyclerAdapter(this@MainActivity,sayfaBasiGonderiler,tumKonumlar)
+                            var latitude=snapshot.getValue(kullaniciKonumlari::class.java)!!.latitude
+                            var longitude=snapshot.getValue(kullaniciKonumlari::class.java)!!.longitude
+
+                            var eklenecekKonumlar=kullaniciKonumlari()
+                            eklenecekKonumlar.latitude=latitude
+                            eklenecekKonumlar.longitude=longitude
 
 
-                        recyclerviewadapter.notifyItemInserted(tumKonumlar.size-1)
+                            tumKullaniciKonumlari.add(eklenecekKonumlar)
 
+                        }
+                    }
+                    else{
+                        Log.e("TAG","HATA")
                     }
 
 
-                }
+                    val layoutManager= LinearLayoutManager(this@MainActivity)
+                    recyclerAnaSayfa.layoutManager=layoutManager
+                    recyclerviewadapter= mainActivityRecyclerAdapter(this@MainActivity,sayfaBasiGonderiler,tumKullaniciKonumlari)
+                    recyclerAnaSayfa.adapter=recyclerviewadapter
+                    recyclerviewadapter.notifyDataSetChanged()
 
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-
-
-
-                        var guncellenecekKonusma = snapshot!!.getValue(konumlar::class.java)
-                        guncellenecekKonusma!!.kullaniciLatitude=snapshot.getValue(konumlar::class.java)!!.kullaniciLatitude
-                        guncellenecekKonusma.kullaniciLongitude=snapshot.getValue(konumlar::class.java)!!.kullaniciLongitude
-
-                        // myRecyclerView.recycledViewPool.clear()
-                        tumKonumlar.clear()
-                        recyclerviewadapter.notifyItemRemoved(konumPositionBul(konumlar()))
-                        tumKonumlar.add( guncellenecekKonusma!! )
-                        recyclerviewadapter.notifyItemInserted(0)
+                    Log.e("konumlar","tumkonumlar"+tumKullaniciKonumlari)
 
 
-                }
-
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                }
-
-
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -264,167 +244,90 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-
-
-
-    }
-
-    private fun konumPositionBul(kullainiciKonum: konumlar?) : Int{
-
-        for(i in 0..tumKonumlar.size-1){
-
-            var gecici = tumKonumlar.get(i)
-            Log.e("gecicikonum","neymis"+gecici)
-
-            if(gecici.kullaniciLatitude!!.equals(kullainiciKonum)&&gecici.kullaniciLongitude!!.equals(kullainiciKonum)){
-
-                return i
-            }
-
-
-        }
-
-        return -1
-
-
-    }
-
-
-
+    }*/
 
 
     private fun verileriGetir() {
 
         mref=FirebaseDatabase.getInstance().reference
 
-
-
-
-
+        tumGonderiler.clear()
+        sayfaBasiGonderiler.clear()
 
         for(i in 0..tumPostlar.size-1){
-            var kullaniciID = tumPostlar.get(i)
 
+              var kullaniciID = tumPostlar.get(i)
 
-            mref.child("users").child("isletmeler").child(kullaniciID).addListenerForSingleValueEvent(object :ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
 
+              Log.e("kullaniciID", "kullaniciID:" +tumPostlar.get(i))
 
-                    Log.e("ondata", "isletmelerondata:" + snapshot)
+              mref.child("users").child("isletmeler").child(kullaniciID).addValueEventListener(object :ValueEventListener{
+                  override fun onDataChange(snapshot: DataSnapshot) {
 
+                      var userID=snapshot.getValue(kullanicilar::class.java)!!.user_id
+                      var kullaniciadi=snapshot.getValue(kullanicilar::class.java)!!.user_name
+                      var photoURL=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture
+                      var isletmeLati=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.latitude
+                      var isletmeLongi=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.longitude
 
 
+                      mref.child("kampanya").child(kullaniciID).addValueEventListener(object :ValueEventListener{
+                          override fun onDataChange(snapshot: DataSnapshot) {
 
-                    var userID=kullaniciID
-                    var kullaniciadi=snapshot.getValue(kullanicilar::class.java)!!.user_name
-                    var photoURL=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture
-                    var isletmeLati=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.latitude
-                    var isletmeLongi=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.longitude
+                              if (snapshot!!.hasChildren()){
 
+                                  for (ds in snapshot!!.children){
 
+                                      var eklenecekUserPost=kullaniciKampanya()
 
+                                      eklenecekUserPost.userID=userID
+                                      eklenecekUserPost.userName=kullaniciadi
+                                      eklenecekUserPost.userPhotoURL=photoURL
+                                      eklenecekUserPost.postID=ds.getValue(kampanya::class.java)!!.post_id
+                                      eklenecekUserPost.postURL=ds.getValue(kampanya::class.java)!!.file_url
+                                      eklenecekUserPost.postAciklama=ds.getValue(kampanya::class.java)!!.aciklama
+                                      eklenecekUserPost.postYuklenmeTarih=ds.getValue(kampanya::class.java)!!.yuklenme_tarih
+                                      eklenecekUserPost.geri_sayim=ds.getValue(kampanya::class.java)!!.geri_sayim
 
 
+                                      eklenecekUserPost.isletmeLatitude=isletmeLati
+                                      eklenecekUserPost.isletmeLongitude=isletmeLongi
 
-                    Log.e("isletmelat","isletme lat"+isletmeLongi)
+                                      tumGonderiler.add(eklenecekUserPost)
 
 
+                                  }
 
+                              }
 
 
+                              if(i>=tumPostlar.size-1){
 
+                                  if (tumPostlar.size>0){
 
+                                      setUpRecyclerview()
+                                  }
 
+                              }
 
+                          }
 
+                          override fun onCancelled(error: DatabaseError) {
+                          }
 
+                      })
 
 
-                                mref.child("kampanya").child(kullaniciID).addListenerForSingleValueEvent(object :ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
 
-                                        Log.e("ondata", "kampanyalarondata:" + snapshot)
 
+                  }
 
-                                        if (snapshot!!.hasChildren()){
+                  override fun onCancelled(error: DatabaseError) {}
 
-                                            Log.e("ondata", "kampanyalarondatahascild:" + snapshot.hasChildren())
+              })
 
 
-                                            for (ds in snapshot!!.children){
-
-                                                Log.e("ondata", "kampanyalarfor:" + ds)
-
-
-
-
-
-
-
-                                                var eklenecekUserPost=kullaniciKampanya()
-
-                                                eklenecekUserPost.userID=userID
-                                                eklenecekUserPost.userName=kullaniciadi
-                                                eklenecekUserPost.userPhotoURL=photoURL
-                                                eklenecekUserPost.postID=ds.getValue(kampanya::class.java)!!.post_id
-                                                eklenecekUserPost.postURL=ds.getValue(kampanya::class.java)!!.file_url
-                                                eklenecekUserPost.postAciklama=ds.getValue(kampanya::class.java)!!.aciklama
-                                                eklenecekUserPost.postYuklenmeTarih=ds.getValue(kampanya::class.java)!!.yuklenme_tarih
-                                                eklenecekUserPost.geri_sayim=ds.getValue(kampanya::class.java)!!.geri_sayim
-
-                                                eklenecekUserPost.isletmeLatitude=isletmeLati
-                                                eklenecekUserPost.isletmeLongitude=isletmeLongi
-
-
-
-
-
-                                                tumGonderiler.add(eklenecekUserPost)
-
-
-
-                                                Log.e("tumgonderiler","size"+tumGonderiler.size)
-
-                                                Log.e("tumgonderiler","içerik"+tumGonderiler)
-
-
-
-                                            }
-                                         }
-                                                        if(i>=tumPostlar.size-1){
-
-                                                        if (tumPostlar.size>0){
-
-                                                            setUpRecyclerview()
-                                                        }
-
-                                                        }
-
-
-
-
-                                                }
-
-                                                override fun onCancelled(error: DatabaseError) {
-                                                }
-
-                                            })
-
-
-
-
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-
-
-                }
-
-            })
-
-
-        }
+          }
 
 
 
@@ -434,7 +337,7 @@ class MainActivity : AppCompatActivity() {
     private fun listeyeYeniElemanlariEkle() {
 
         var yeniGetirilecekElemanlarinAltSiniri = sayfaSayisi * SAYFA_BASI_GONDERI
-        var yeniGetirilecekElemanlarinUstSiniri = (sayfaSayisi + 1) * SAYFA_BASI_GONDERI - 1
+        var yeniGetirilecekElemanlarinUstSiniri = (sayfaSayisi +1) * SAYFA_BASI_GONDERI - 1
         for (i in yeniGetirilecekElemanlarinAltSiniri..yeniGetirilecekElemanlarinUstSiniri) {
             if (sayfaBasiGonderiler.size <= tumGonderiler.size - 1) {
                 sayfaBasiGonderiler.add(tumGonderiler.get(i))
@@ -452,7 +355,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     private fun setUpRecyclerview(){
 
         Collections.sort(tumGonderiler,object :Comparator<kullaniciKampanya>{
@@ -466,14 +368,18 @@ class MainActivity : AppCompatActivity() {
 
         if (tumGonderiler.size >= SAYFA_BASI_GONDERI) {
 
-            for (i in 0..SAYFA_BASI_GONDERI - 1) {
+
+            for (i in 0..SAYFA_BASI_GONDERI-1) {
                 sayfaBasiGonderiler.add(tumGonderiler.get(i))
+
+
 
 
             }
         } else {
-            for (i in 0..tumGonderiler.size - 1) {
+            for (i in 0..tumGonderiler.size-1) {
                 sayfaBasiGonderiler.add(tumGonderiler.get(i))
+
 
 
 
@@ -481,14 +387,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         val layoutManager= LinearLayoutManager(this@MainActivity)
         recyclerAnaSayfa.layoutManager=layoutManager
-        recyclerviewadapter= mainActivityRecyclerAdapter(this@MainActivity,sayfaBasiGonderiler,tumKonumlar)
+        recyclerviewadapter= mainActivityRecyclerAdapter(this@MainActivity,sayfaBasiGonderiler)
         recyclerAnaSayfa.adapter=recyclerviewadapter
-
-
-
 
 
 
@@ -501,7 +403,6 @@ class MainActivity : AppCompatActivity() {
             ) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val layoutManager = recyclerAnaSayfa!!.layoutManager as LinearLayoutManager
 
                 if (dy > 0 && layoutManager.findLastVisibleItemPosition() == recyclerAnaSayfa!!.adapter!!.itemCount - 1) {
 
@@ -510,14 +411,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
 
-
             }
         })
 
     }
-
-
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu2,menu)
@@ -525,7 +422,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-       mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :ValueEventListener{
+       mref.child("users").child("kullanicilar").addValueEventListener(object :ValueEventListener{
            override fun onDataChange(snapshot: DataSnapshot) {
                if (snapshot!!.getValue()!=null){
 

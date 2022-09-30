@@ -22,12 +22,7 @@
         android:theme="@style/Theme.Paylasim"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".IsletmeKayitBilgileriActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginIsletmeActivity"
-            android:exported="false" />
+
         <!--
              To get one, follow the directions here:
 
@@ -40,6 +35,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="YOUR_API_KEY" />
+
 
         <activity
             android:name=".MapsActivity"
@@ -59,7 +55,7 @@
             android:exported="false" />
         <activity
             android:name=".kampanyaolustur.kampanyaOlustur"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".profil.profilAyarlarActivity"
             android:exported="false" />

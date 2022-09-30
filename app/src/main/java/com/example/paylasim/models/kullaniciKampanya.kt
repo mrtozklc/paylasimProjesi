@@ -11,10 +11,17 @@ class kullaniciKampanya {
     var postYuklenmeTarih:Long?=null
     var isletmeLatitude: Double? = 0.0
     var isletmeLongitude: Double? = 0.0
-    var kullaniciLatitude: Double? = 0.0
-    var kullaniciLongitude: Double? = 0.0
 
-    constructor(userID: String?, userName: String?, userPhotoURL: String?, postID: String?, postAciklama: String?,geri_sayim:String?, postURL: String?, postYuklenmeTarih: Long?,isletmeLatitude:Double?,isletmeLongitude:Double?,kullaniciLatitude:Double?,kullaniciLongitude:Double?) {
+
+    constructor(userID: String?,
+                userName: String?,
+                userPhotoURL: String?,
+                postID: String?,
+                postAciklama: String?,
+                geri_sayim:String?, postURL: String?,
+                postYuklenmeTarih: Long?,
+                isletmeLatitude:Double?,
+                isletmeLongitude:Double?) {
         this.userID = userID
         this.userName = userName
         this.userPhotoURL = userPhotoURL
@@ -25,14 +32,13 @@ class kullaniciKampanya {
         this.postYuklenmeTarih = postYuklenmeTarih
         this.isletmeLatitude=isletmeLatitude
         this.isletmeLongitude=isletmeLongitude
-        this.kullaniciLatitude=kullaniciLatitude
-        this.kullaniciLongitude=kullaniciLongitude
+
     }
 
     constructor(){}
 
     override fun toString(): String {
-        return "UserPosts(userID=$userID, userName=$userName, userPhotoURL=$userPhotoURL, postID=$postID, postAciklama=$postAciklama,,geri_sayim=$geri_sayim postURL=$postURL, postYuklenmeTarih=$postYuklenmeTarih,isletmeLatitude=$isletmeLatitude,isletmeLongitude=$isletmeLongitude,kullanicilatitude=$kullaniciLatitude,kullaniciLongitude=$kullaniciLongitude)"
+        return "UserPosts(userID=$userID, userName=$userName, userPhotoURL=$userPhotoURL, postID=$postID, postAciklama=$postAciklama,,geri_sayim=$geri_sayim postURL=$postURL, postYuklenmeTarih=$postYuklenmeTarih,isletmeLatitude=$isletmeLatitude,isletmeLongitude=$isletmeLongitude)"
     }
 
 }
