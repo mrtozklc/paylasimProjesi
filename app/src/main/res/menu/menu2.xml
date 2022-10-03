@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/kampanyaOlustur_id"  android:title="Kampanya Oluştur"></item>
-    <item android:id="@+id/profil_id"  android:title="Profil"></item>
-    <item android:id="@+id/bildirimler_id"  android:title="Bildirimler"></item>
-    <item android:id="@+id/mesajlar_id"  android:title="Mesajlar"></item>
-    <item
-        android:id="@+id/cikisYap"
-        android:title="Çıkış yap"></item>
+    <item android:id="@+id/kampanyaOlustur_id"
+        android:title="Kampanya Oluştur" ></item>
+
+    <item android:id="@+id/profil_id"
+        android:title="Profil"></item>
+
+    <item android:id="@+id/bildirimler_id"
+        android:title="Bildirimler" android:icon="@drawable/notificationsss"
+        app:showAsAction="ifRoom"></item>
+
+    <item android:id="@+id/mesajlar_id"
+        android:title="@string/Mesajlar"
+        android:icon="@drawable/ic_launcher_mesaj2_foreground"
+        app:showAsAction="ifRoom"></item>
+
+    <item android:id="@+id/cikisYap"
+        android:title="Çıkış yap"
+       ></item>
 
 </menu>

@@ -18,8 +18,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.activity_bildirim.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_mesajlar.*
+import kotlinx.android.synthetic.main.activity_mesajlar.imageView_back
 
 class mesajlar : AppCompatActivity() {
     lateinit var auth : FirebaseAuth
@@ -44,9 +46,11 @@ class mesajlar : AppCompatActivity() {
         progressBarMesajlar.visibility= View.VISIBLE
         recyclerMesajlar.visibility=View.INVISIBLE
         setAdapter()
-
-
         setupAuthLis()
+
+        imageView_back.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setAdapter() {
@@ -63,7 +67,8 @@ class mesajlar : AppCompatActivity() {
         konusmalariGetir()
     }
 
-    private fun konusmalariGetir() {
+    private fun
+            konusmalariGetir() {
 
      mref.child("konusmalar").child(auth.currentUser!!.uid).orderByChild("gonderilmeZamani").addChildEventListener(mListener)
 
@@ -81,13 +86,36 @@ class mesajlar : AppCompatActivity() {
 
         }.start()
 
+
+        if (tumKonusmalar.size==0){
+            mref.child("konusmalar").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                   if (snapshot.getValue()==null){
+                       mesaj_yok.visibility=View.VISIBLE
+                       recyclerMesajlar.visibility=View.GONE
+                   }else{
+                       mesaj_yok.visibility=View.GONE
+                       recyclerMesajlar.visibility=View.VISIBLE
+
+                   }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
+        }
+
     }
     private var mListener=object :ChildEventListener{
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+            mesaj_yok.visibility=View.GONE
+            recyclerMesajlar.visibility=View.VISIBLE
             var eklenecekKonusma=snapshot.getValue(konusmalar::class.java)
             eklenecekKonusma!!.user_id=snapshot.key
             tumKonusmalar.add(0,eklenecekKonusma!!)
             madapter.notifyItemInserted(0)
+
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -99,7 +127,7 @@ class mesajlar : AppCompatActivity() {
                 var guncellenecekKonusma = snapshot!!.getValue(konusmalar::class.java)
                 guncellenecekKonusma!!.user_id=snapshot!!.key
 
-                // myRecyclerView.recycledViewPool.clear()
+
                 tumKonusmalar.removeAt(kontrol)
                 madapter.notifyItemRemoved(kontrol)
                 tumKonusmalar.add(0,guncellenecekKonusma)

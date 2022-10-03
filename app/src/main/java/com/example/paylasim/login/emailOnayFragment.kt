@@ -70,6 +70,7 @@ class emailOnayFragment : Fragment() {
         view.etSifre.addTextChangedListener(watcher)
 
         view.btn_giris.setOnClickListener {
+            if( !view.etAdSoyad.text.toString().trim().isEmpty()){
 
             if(view.etKullaniciAdi.text.toString().trim().length>5 && view.etSifre.text.toString().trim().length>5 && !view.etAdSoyad.text.toString().trim().isNullOrEmpty())
             {
@@ -228,9 +229,6 @@ class emailOnayFragment : Fragment() {
                                                     })
 
 
-                                            } else {
-
-                                                Toast.makeText(activity, "Oturum açılamadı :" + p0!!.exception, Toast.LENGTH_SHORT).show()
                                             }
 
                                         }
@@ -251,7 +249,11 @@ class emailOnayFragment : Fragment() {
 
                 })
             }else{
-                Toast.makeText(activity,"Kullanıcı adı ve şifre en az 6 karakter olmalıdır",Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity,"Kullanıcı adı ve şifre en az 6 karakter olmalıdır.", Toast.LENGTH_SHORT).show()
+            }
+            }
+            else{
+                Toast.makeText(activity,"Ad ve soyad boş bırakılamaz.", Toast.LENGTH_SHORT).show()
             }
 
 
@@ -282,7 +284,7 @@ class emailOnayFragment : Fragment() {
                     )
 
                 } else {
-                    btn_giris.isEnabled = false
+
                     btn_giris.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.white))
                     btn_giris.setTextColor(ContextCompat.getColor(activity!!, R.color.black))
 

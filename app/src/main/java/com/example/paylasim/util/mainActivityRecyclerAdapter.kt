@@ -27,7 +27,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.recycler_row.view.*
 import org.greenrobot.eventbus.EventBus
 import kotlin.collections.ArrayList
-
 class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayList<kullaniciKampanya>):RecyclerView.Adapter<mainActivityRecyclerAdapter.MyViewHolder>() {
 
 
@@ -51,6 +50,8 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
         var myMainActivity = mainActivity
         var geriSayim=tumLayout.geri_sayim_id
         var mesafe=tumLayout.tw_mesafe
+        var delete=tumLayout.delete
+
 
 
 
@@ -58,6 +59,8 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
         @SuppressLint("SetTextI18n")
         fun setData(position: Int, anlikGonderi: kullaniciKampanya) {
+
+            delete.visibility=View.GONE
 
             var ref = FirebaseDatabase.getInstance().reference.child("konumlar").child("kullanici_konum").child(FirebaseAuth.getInstance().currentUser?.uid.toString())
                 .child(FirebaseAuth.getInstance().currentUser?.uid.toString()).addValueEventListener(object :ValueEventListener{
@@ -67,7 +70,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
                         val longitude = snapshot.child("longitude").value.toString()
 
                         if (snapshot.exists()){
-                            if (anlikGonderi.isletmeLatitude!=0.0 && anlikGonderi.isletmeLongitude!=0.0){
+                            if (anlikGonderi.isletmeLatitude!=0.0 && anlikGonderi.isletmeLongitude!=0.0) {
 
                                 val startPoint = Location("locationA")
                                 startPoint.setLatitude(anlikGonderi.isletmeLatitude!!)
@@ -77,352 +80,29 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
                                 endPoint.setLatitude(latitude.toDouble())
                                 endPoint.setLongitude(longitude.toDouble())
 
-                                val distance: Int = startPoint.distanceTo(endPoint).toDouble().toInt()
+                                val distance: Int =
+                                    startPoint.distanceTo(endPoint).toDouble().toInt()
 
-                                mesafe.setText(distance.toString()+"   metre")
 
+                                Log.e("gelenkonum1","${anlikGonderi.isletmeLatitude!!.toDouble()}")
+                                Log.e("gelenkonum1","${anlikGonderi.isletmeLongitude!!.toDouble()}")
 
 
 
+                                Log.e("gelenkonum","${latitude.toDouble()}")
+                                Log.e("gelenkonum","${longitude.toDouble()}")
 
 
-                                   userNameTitle.setText(anlikGonderi.userName)
+                                mesafe.setText(distance.toString() + "   metre")
+                            }
 
-                                   imageLoader.setImage(anlikGonderi.userPhotoURL!!,profileImage,null,"")
 
 
 
-                                   // Picasso.get().load(anlikGonderi.userPhotoURL).fit().centerCrop().into(profileImage)
-
-
-
-                                   userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
-
-                                   Picasso.get().load(anlikGonderi.postURL).fit().centerCrop().into(gonderi)
-
-
-                                   kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
-
-
-                                   if (anlikGonderi.geri_sayim=="1 saat"){
-
-                                       var time = anlikGonderi.postYuklenmeTarih
-
-                                       if (time != null) {
-                                           if (time < 1000000000000L) {
-                                               // if timestamp given in seconds, convert to millis
-                                               time *= 1000
-                                           }
-                                       }
-                                       val now = System.currentTimeMillis()
-                                       if (time != null) {
-                                           if (time > now || time <= 0) {
-
-
-                                           }else{
-
-                                               val difff =  now - time!!
-
-                                               if (difff>=3600000){
-                                                   geriSayim.setText("kampanya süresi doldu!")
-
-
-                                               }
-
-
-                                               object : CountDownTimer(3600000-difff, 1000) {
-
-                                                   override fun onTick(millisUntilFinished: Long) {
-                                                       var diff = millisUntilFinished
-                                                       val secondsInMilli: Long = 1000
-                                                       val minutesInMilli = secondsInMilli * 60
-                                                       val hoursInMilli = minutesInMilli * 60
-
-
-                                                       val elapsedHours = diff / hoursInMilli
-                                                       diff %= hoursInMilli
-
-                                                       val elapsedMinutes = diff / minutesInMilli
-                                                       diff %= minutesInMilli
-
-                                                       val elapsedSeconds = diff / secondsInMilli
-
-
-
-                                                       geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
-
-                                                   }
-
-                                                   override fun onFinish() {
-                                                       geriSayim.setText("kampanya süresi doldu!")
-                                                   }
-
-                                               }.start()
-
-
-                                           }
-                                       }
-
-
-                                   }
-                                   else if (anlikGonderi.geri_sayim=="2 saat"){
-
-                                       var time = anlikGonderi.postYuklenmeTarih
-
-                                       if (time != null) {
-                                           if (time < 1000000000000L) {
-                                               // if timestamp given in seconds, convert to millis
-                                               time *= 1000
-                                           }
-                                       }
-                                       val now = System.currentTimeMillis()
-                                       if (time != null) {
-                                           if (time > now || time <= 0) {
-
-
-                                           }else{
-
-                                               val difff =  now - time!!
-
-                                               if (difff>=7200000){
-                                                   geriSayim.setText("kampanya süresi doldu!")
-
-
-                                               }
-
-
-                                               object : CountDownTimer(7200000-difff, 1000) {
-
-                                                   override fun onTick(millisUntilFinished: Long) {
-                                                       var diff = millisUntilFinished
-                                                       val secondsInMilli: Long = 1000
-                                                       val minutesInMilli = secondsInMilli * 60
-                                                       val hoursInMilli = minutesInMilli * 60
-
-
-                                                       val elapsedHours = diff / hoursInMilli
-                                                       diff %= hoursInMilli
-
-                                                       val elapsedMinutes = diff / minutesInMilli
-                                                       diff %= minutesInMilli
-
-                                                       val elapsedSeconds = diff / secondsInMilli
-
-
-
-                                                       geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
-
-                                                   }
-
-                                                   override fun onFinish() {
-                                                       geriSayim.setText("kampanya süresi doldu!")
-                                                   }
-
-                                               }.start()
-
-
-                                           }
-                                       }
-
-
-                                   }
-                                   else if(anlikGonderi.geri_sayim=="3 saat"){
-                                       var time = anlikGonderi.postYuklenmeTarih
-
-                                       if (time != null) {
-                                           if (time < 1000000000000L) {
-                                               // if timestamp given in seconds, convert to millis
-                                               time *= 1000
-                                           }
-                                       }
-                                       val now = System.currentTimeMillis()
-                                       if (time != null) {
-                                           if (time > now || time <= 0) {
-
-
-                                           }else if(anlikGonderi.geri_sayim=="3 saat"){
-
-                                               val difff =  now - time!!
-
-                                               if (difff>=10800000){
-                                                   geriSayim.setText("kampanya süresi doldu!")
-
-
-                                               }
-
-
-                                               object : CountDownTimer(10800000-difff, 1000) {
-
-                                                   override fun onTick(millisUntilFinished: Long) {
-                                                       var diff = millisUntilFinished
-                                                       val secondsInMilli: Long = 1000
-                                                       val minutesInMilli = secondsInMilli * 60
-                                                       val hoursInMilli = minutesInMilli * 60
-
-
-                                                       val elapsedHours = diff / hoursInMilli
-                                                       diff %= hoursInMilli
-
-                                                       val elapsedMinutes = diff / minutesInMilli
-                                                       diff %= minutesInMilli
-
-                                                       val elapsedSeconds = diff / secondsInMilli
-
-
-
-                                                       geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
-
-                                                   }
-
-                                                   override fun onFinish() {
-                                                       geriSayim.setText("kampanya süresi doldu!")
-                                                   }
-
-                                               }.start()
-
-
-                                           }
-                                       }
-
-
-                                   }
-
-
-
-
-                                   userNameTitle.setOnClickListener {
-
-
-                                       if (anlikGonderi.userID!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
-
-                                           val intent=Intent(myMainActivity,profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                           myMainActivity.startActivity(intent)
-
-                                       }else{
-
-
-                                           val intent=Intent(myMainActivity,userProfil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                           intent.putExtra("secilenUserId",anlikGonderi.userID!!)
-                                           myMainActivity.startActivity(intent)
-
-
-                                       }
-
-
-
-
-                                   }
-                                postMenu.setOnClickListener {
-                                    var mref=FirebaseDatabase.getInstance().reference
-                                    var mauth=FirebaseAuth.getInstance().currentUser!!.uid
-
-
-                                    mref.child("kampanya").child(anlikGonderi.userID!!).addListenerForSingleValueEvent(object :ValueEventListener{
-                                        override fun onDataChange(snapshot: DataSnapshot) {
-
-                                            if (snapshot!!.getValue()!=null){
-                                                if (!anlikGonderi.userID.equals(mauth)){
-                                                    var intent=Intent(myMainActivity, chat::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                                    intent.putExtra("konusulacakKisi",anlikGonderi.userID)
-
-
-                                                    myMainActivity.startActivity(intent)
-
-                                                }else{
-                                                    var intent=Intent(myMainActivity, profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                                    myMainActivity.startActivity(intent)
-
-                                                }
-
-
-
-
-                                            }
-                                        }
-
-                                        override fun onCancelled(error: DatabaseError) {
-                                        }
-
-                                    })
-
-
-
-
-                                }
-
-                                   begeniKontrolu(anlikGonderi)
-                                   yorumlariGoster(position,anlikGonderi)
-
-
-                                   yorumYap.setOnClickListener {
-
-
-
-                                       yorumlarFragmentiniBaslat(anlikGonderi)
-
-
-                                   }
-
-                                   var mauth=FirebaseAuth.getInstance().currentUser!!.uid
-
-                                   if (anlikGonderi.userID.equals(mauth)){
-                                       postMenu.visibility=View.GONE
-                                   }
-
-                                   gonderiBegen.setOnClickListener {
-
-                                       var ref = FirebaseDatabase.getInstance().reference
-                                       var currentID = FirebaseAuth.getInstance().currentUser!!.uid
-
-                                       ref.child("begeniler").child(anlikGonderi.postID!!)
-                                           .addListenerForSingleValueEvent(object : ValueEventListener {
-                                               override fun onDataChange(snapshot: DataSnapshot) {
-                                                   if (snapshot!!.hasChild(currentID)) {
-
-                                                       ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
-                                                           .removeValue()
-
-
-
-
-                                                       if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
-                                                           bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
-
-
-                                                       }
-
-                                                       gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
-
-                                                   } else {
-                                                       ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
-                                                           .setValue(currentID)
-
-                                                       if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
-                                                           bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
-                                                       }
-                                                       gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
-                                                       begenmeSayisi.visibility=View.VISIBLE
-                                                       begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
-
-
-
-                                                   }
-                                               }
-
-                                               override fun onCancelled(error: DatabaseError) {
-                                               }
-
-                                           })
-
-                                   }
-
-                                   yorumlariGoster.setOnClickListener {
-                                       yorumlarFragmentiniBaslat(anlikGonderi)
-                                   }
 
 
                             }
-                        }
+
 
 
                     }
@@ -431,6 +111,343 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
                     }
 
                 })
+
+
+
+            userNameTitle.setText(anlikGonderi.userName)
+
+            imageLoader.setImage(anlikGonderi.userPhotoURL!!,profileImage,null,"")
+
+
+
+            // Picasso.get().load(anlikGonderi.userPhotoURL).fit().centerCrop().into(profileImage)
+
+
+
+            userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
+
+            Picasso.get().load(anlikGonderi.postURL).fit().centerCrop().into(gonderi)
+
+
+            kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
+
+
+            if (anlikGonderi.geri_sayim=="1 saat"){
+
+                var time = anlikGonderi.postYuklenmeTarih
+
+                if (time != null) {
+                    if (time < 1000000000000L) {
+                        // if timestamp given in seconds, convert to millis
+                        time *= 1000
+                    }
+                }
+                val now = System.currentTimeMillis()
+                if (time != null) {
+                    if (time > now || time <= 0) {
+
+
+                    }else{
+
+                        val difff =  now - time!!
+
+                        if (difff>=3600000){
+                            geriSayim.setText("kampanya süresi doldu!")
+
+
+                        }
+
+
+                        object : CountDownTimer(3600000-difff, 1000) {
+
+                            override fun onTick(millisUntilFinished: Long) {
+                                var diff = millisUntilFinished
+                                val secondsInMilli: Long = 1000
+                                val minutesInMilli = secondsInMilli * 60
+                                val hoursInMilli = minutesInMilli * 60
+
+
+                                val elapsedHours = diff / hoursInMilli
+                                diff %= hoursInMilli
+
+                                val elapsedMinutes = diff / minutesInMilli
+                                diff %= minutesInMilli
+
+                                val elapsedSeconds = diff / secondsInMilli
+
+
+
+                                geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
+
+                            }
+
+                            override fun onFinish() {
+                                geriSayim.setText("kampanya süresi doldu!")
+                            }
+
+                        }.start()
+
+
+                    }
+                }
+
+
+            }
+            else if (anlikGonderi.geri_sayim=="2 saat"){
+
+                var time = anlikGonderi.postYuklenmeTarih
+
+                if (time != null) {
+                    if (time < 1000000000000L) {
+                        // if timestamp given in seconds, convert to millis
+                        time *= 1000
+                    }
+                }
+                val now = System.currentTimeMillis()
+                if (time != null) {
+                    if (time > now || time <= 0) {
+
+
+                    }else{
+
+                        val difff =  now - time!!
+
+                        if (difff>=7200000){
+                            geriSayim.setText("kampanya süresi doldu!")
+
+
+                        }
+
+
+                        object : CountDownTimer(7200000-difff, 1000) {
+
+                            override fun onTick(millisUntilFinished: Long) {
+                                var diff = millisUntilFinished
+                                val secondsInMilli: Long = 1000
+                                val minutesInMilli = secondsInMilli * 60
+                                val hoursInMilli = minutesInMilli * 60
+
+
+                                val elapsedHours = diff / hoursInMilli
+                                diff %= hoursInMilli
+
+                                val elapsedMinutes = diff / minutesInMilli
+                                diff %= minutesInMilli
+
+                                val elapsedSeconds = diff / secondsInMilli
+
+
+
+                                geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
+
+                            }
+
+                            override fun onFinish() {
+                                geriSayim.setText("kampanya süresi doldu!")
+                            }
+
+                        }.start()
+
+
+                    }
+                }
+
+
+            }
+            else if(anlikGonderi.geri_sayim=="3 saat"){
+                var time = anlikGonderi.postYuklenmeTarih
+
+                if (time != null) {
+                    if (time < 1000000000000L) {
+                        // if timestamp given in seconds, convert to millis
+                        time *= 1000
+                    }
+                }
+                val now = System.currentTimeMillis()
+                if (time != null) {
+                    if (time > now || time <= 0) {
+
+
+                    }else if(anlikGonderi.geri_sayim=="3 saat"){
+
+                        val difff =  now - time!!
+
+                        if (difff>=10800000){
+                            geriSayim.setText("kampanya süresi doldu!")
+
+
+                        }
+
+
+                        object : CountDownTimer(10800000-difff, 1000) {
+
+                            override fun onTick(millisUntilFinished: Long) {
+                                var diff = millisUntilFinished
+                                val secondsInMilli: Long = 1000
+                                val minutesInMilli = secondsInMilli * 60
+                                val hoursInMilli = minutesInMilli * 60
+
+
+                                val elapsedHours = diff / hoursInMilli
+                                diff %= hoursInMilli
+
+                                val elapsedMinutes = diff / minutesInMilli
+                                diff %= minutesInMilli
+
+                                val elapsedSeconds = diff / secondsInMilli
+
+
+
+                                geriSayim.setText("$elapsedHours s $elapsedMinutes d $elapsedSeconds ")
+
+                            }
+
+                            override fun onFinish() {
+                                geriSayim.setText("kampanya süresi doldu!")
+                            }
+
+                        }.start()
+
+
+                    }
+                }
+
+
+            }
+
+
+
+
+            userNameTitle.setOnClickListener {
+
+
+                if (anlikGonderi.userID!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+
+                    val intent=Intent(myMainActivity,profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    myMainActivity.startActivity(intent)
+
+                }else{
+
+
+                    val intent=Intent(myMainActivity,userProfil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    intent.putExtra("secilenUserId",anlikGonderi.userID!!)
+                    myMainActivity.startActivity(intent)
+
+
+                }
+
+
+
+
+            }
+            postMenu.setOnClickListener {
+                var mref=FirebaseDatabase.getInstance().reference
+                var mauth=FirebaseAuth.getInstance().currentUser!!.uid
+
+
+                mref.child("kampanya").child(anlikGonderi.userID!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+
+                        if (snapshot!!.getValue()!=null){
+                            if (!anlikGonderi.userID.equals(mauth)){
+                                var intent=Intent(myMainActivity, chat::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                intent.putExtra("konusulacakKisi",anlikGonderi.userID)
+
+
+                                myMainActivity.startActivity(intent)
+
+                            }else{
+                                var intent=Intent(myMainActivity, profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                myMainActivity.startActivity(intent)
+
+                            }
+
+
+
+
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+
+                })
+
+
+
+
+            }
+
+            begeniKontrolu(anlikGonderi)
+            yorumlariGoster(position,anlikGonderi)
+
+
+            yorumYap.setOnClickListener {
+
+
+
+                yorumlarFragmentiniBaslat(anlikGonderi)
+
+
+            }
+
+            var mauth=FirebaseAuth.getInstance().currentUser!!.uid
+
+            if (anlikGonderi.userID.equals(mauth)){
+                postMenu.visibility=View.GONE
+            }
+
+            gonderiBegen.setOnClickListener {
+
+                var ref = FirebaseDatabase.getInstance().reference
+                var currentID = FirebaseAuth.getInstance().currentUser!!.uid
+
+                ref.child("begeniler").child(anlikGonderi.postID!!)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot!!.hasChild(currentID)) {
+
+                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                    .removeValue()
+
+
+
+
+                                if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+                                    bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
+
+
+                                }
+
+                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+
+                            } else {
+                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                    .setValue(currentID)
+
+                                if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
+                                    bildirimler.bildirimKaydet(anlikGonderi.userID!!,bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
+                                }
+                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                                begenmeSayisi.visibility=View.VISIBLE
+                                begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
+
+
+
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+
+                    })
+
+            }
+
+            yorumlariGoster.setOnClickListener {
+                yorumlarFragmentiniBaslat(anlikGonderi)
+            }
+
 
         }
 
@@ -462,6 +479,9 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
         }
 
         private fun yorumlariGoster(position: Int, anlikGonderi: kullaniciKampanya) {
+
+
+
             var mref=FirebaseDatabase.getInstance().reference
             mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -477,6 +497,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
 
                     if (yorumSayisi>=1){
+
                         yorumlariGoster.visibility=View.VISIBLE
                         yorumlariGoster.setText(yorumSayisi.toString()+"  yorum")
 
@@ -495,6 +516,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
         }
 
         fun begeniKontrolu(anlikGonderi: kullaniciKampanya) {
+
             var mRef = FirebaseDatabase.getInstance().reference
             var userID = FirebaseAuth.getInstance().currentUser!!.uid
             mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object : ValueEventListener {
@@ -504,6 +526,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
                 override fun onDataChange(snapshot: DataSnapshot) {
 
                     if(snapshot!!.getValue()!=null){
+
                         begenmeSayisi.visibility=View.VISIBLE
                         begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
 
@@ -541,8 +564,8 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-            holder.setData(position, tumKampanyalar[position])
-            Log.e("tumkonumlar","tümkampanyalar::: ${tumKampanyalar[position]}:konumlar::")
+        holder.setData(position, tumKampanyalar[position])
+        Log.e("tumkonumlar","tümkampanyalar::: ${tumKampanyalar[position]}:konumlar::")
 
 
 

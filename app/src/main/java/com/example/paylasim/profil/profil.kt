@@ -1,9 +1,10 @@
 package com.example.paylasim.profil
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasim.R
 import com.example.paylasim.models.kampanya
@@ -20,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import kotlinx.android.synthetic.main.activity_profil.*
 import kotlinx.android.synthetic.main.activity_profil_ayarlar.tv_Mesaj
 import org.greenrobot.eventbus.EventBus
+
 
 class profil : AppCompatActivity() {
      lateinit var mref:DatabaseReference
@@ -49,10 +51,13 @@ class profil : AppCompatActivity() {
 
 
 
+
+
     }
 
 
     private fun verileriGetir(kullanicid: String) {
+
 
 
         mref.child("users").child("isletmeler").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
@@ -78,10 +83,7 @@ class profil : AppCompatActivity() {
 
                                 tumGonderiler.add(eklenecekUserPost)
 
-
-
-
-
+                                Log.e("tomprofil","sayisi:"+tumGonderiler.size)
 
 
                             }
@@ -97,7 +99,9 @@ class profil : AppCompatActivity() {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
+
                     }
+
 
                 })
 
@@ -111,7 +115,9 @@ class profil : AppCompatActivity() {
         mref.child("users").child("kullanicilar").child(kullanicid).addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
 
+
                 if (snapshot!!.getValue()!=null){
+
                     var userID=kullanicid
                     var kullaniciadi=snapshot.getValue(kullanicilar::class.java)!!.user_name
                     var photoURL=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture

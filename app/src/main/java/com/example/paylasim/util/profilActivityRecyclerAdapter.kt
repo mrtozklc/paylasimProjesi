@@ -2,28 +2,30 @@ package com.example.paylasim.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasim.R
 import com.example.paylasim.models.kullaniciKampanya
 import com.example.paylasim.profil.profil
-import com.example.paylasim.profil.userProfil
+import com.example.paylasim.util.bildirimler.mref
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_kampanya_olustur.*
 import kotlinx.android.synthetic.main.activity_profil.*
 import kotlinx.android.synthetic.main.recycler_row.view.*
 import org.greenrobot.eventbus.EventBus
 import java.util.*
-import kotlin.Comparator
-import kotlin.collections.ArrayList
 
 class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:ArrayList<kullaniciKampanya>):RecyclerView.Adapter<profilActivityRecyclerAdapter.MyViewHolder>() {
 
@@ -55,6 +57,7 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
         var begenmeSayisi=tumLayout.begenmeSayisi
         var yorumlariGoster=tumLayout.tv_yorumGoster
         var postMenu=tumLayout.post_mesaj
+        var delete=tumLayout.delete
 
 
         var myprofilActivity =profil
@@ -65,8 +68,6 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
             userNameTitle.setText(anlikGonderi.userName)
             imageLoader.setImage(anlikGonderi.userPhotoURL!!, profileImage, null, "")
             Log.e("murat","profilpp"+anlikGonderi.postURL)
-
-
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)
@@ -90,6 +91,65 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
             postMenu.visibility=View.GONE
 
+            delete.setOnClickListener {
+
+                var alert = AlertDialog.Builder(myprofilActivity, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
+                    .setTitle("KAMPANYAYI SİL ")
+                    .setMessage("Emin misiniz?")
+                    .setPositiveButton("SİL", object : DialogInterface.OnClickListener {
+
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+
+
+                            var postID = anlikGonderi.postID
+
+                            mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(postID!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                   snapshot.ref.removeValue()
+
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+
+                            })
+
+                            mref.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("user_detail").addListenerForSingleValueEvent(object :ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    var oankiGonderiSayisi=snapshot!!.child("post").getValue().toString().toInt()
+                                    oankiGonderiSayisi--
+                                    mref.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("user_detail").child("post").setValue(oankiGonderiSayisi.toString())
+                                    val intent=Intent(myprofilActivity,profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                    myprofilActivity.startActivity(intent)
+
+                                    (myprofilActivity as profil).finish()
+
+
+
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+
+                            })
+
+
+
+
+                        }
+
+                    })
+                    .setNegativeButton("VAZGEÇ", object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                           p0!!. dismiss()
+                        }
+
+                    })
+                    .create()
+
+                alert.show()
+
+            }
 
 
             yorumlariGoster.setOnClickListener {
@@ -137,8 +197,6 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
                     })
 
             }
-
-
 
 
         }

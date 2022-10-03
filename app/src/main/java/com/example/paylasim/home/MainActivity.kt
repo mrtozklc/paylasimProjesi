@@ -9,13 +9,19 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -26,6 +32,7 @@ import com.example.paylasim.login.LoginActivity
 import com.example.paylasim.login.signOutFragment
 import com.example.paylasim.mesajlar.mesajlar
 import com.example.paylasim.models.kampanya
+import com.example.paylasim.models.konusmalar
 import com.example.paylasim.models.kullaniciKampanya
 import com.example.paylasim.models.kullanicilar
 import com.example.paylasim.profil.profil
@@ -34,11 +41,13 @@ import com.example.paylasim.util.mainActivityRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
-import com.google.firebase.firestore.Query
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.nostra13.universalimageloader.core.ImageLoader
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_mesajlar.*
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth : FirebaseAuth
@@ -50,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     val SAYFA_BASI_GONDERI=10
     var sayfaSayisi=1
     var sayfaninSonunaGelindi = false
+
 
 
     private lateinit var recyclerviewadapter:mainActivityRecyclerAdapter
@@ -67,9 +77,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-
         auth=Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
+
+        progressBar8.visibility=View.VISIBLE
+        refreshMain_id.visibility=View.GONE
+        recyclerAnaSayfa.visibility=View.GONE
+
+
+        setupAuthLis()
+        tumVerileriGetir()
+
+
+
+        initImageLoader()
+
+
+
+
 
 
         locationManager=getSystemService(Context.LOCATION_SERVICE)as LocationManager
@@ -105,9 +130,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        setupAuthLis()
-        initImageLoader()
-        tumVerileriGetir()
+
 
 
         refreshMain_id.setOnRefreshListener(object :SwipeRefreshLayout.OnRefreshListener{
@@ -116,19 +139,15 @@ class MainActivity : AppCompatActivity() {
 
                 tumGonderiler.clear()
                 sayfaBasiGonderiler.clear()
-
                 sayfaninSonunaGelindi=false
 
                 recyclerviewadapter.notifyDataSetChanged()
 
-
-
-                verileriGetir()
-
+               tumVerileriGetir()
 
                 refreshMain_id.isRefreshing = false
 
-                          }
+            }
 
 
         })
@@ -170,24 +189,81 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun tumVerileriGetir(){
+        tumGonderiler.clear()
+        sayfaBasiGonderiler.clear()
 
-        mref.child("kampanya").addValueEventListener(object :ValueEventListener{
+
+
+
+
+
+        mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
 
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                if(p0.getValue()!=null){
+                if(p0.
+                    getValue()!=null){
                     for(ds in p0.children){
                         tumPostlar.add(ds.key!!)
                     }
 
                     verileriGetir()
+
+
                 }
             }
 
 
         })
+
+
+        if (tumGonderiler.size==0){
+
+            mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                   if (snapshot.getValue()==null){
+                       progressBar8.visibility=View.VISIBLE
+                       kampanyaYok.visibility=View.VISIBLE
+                       progressBar8.visibility=View.GONE
+                       refreshMain_id.visibility=View.VISIBLE
+
+                       recyclerviewadapter= mainActivityRecyclerAdapter(this@MainActivity,sayfaBasiGonderiler)
+                       refreshMain_id.setOnRefreshListener(object :SwipeRefreshLayout.OnRefreshListener{
+                           override fun onRefresh() {
+
+                               tumGonderiler.clear()
+                               sayfaBasiGonderiler.clear()
+
+                               tumVerileriGetir()
+
+
+                               refreshMain_id.isRefreshing = false
+
+
+
+                           }
+
+
+                       })
+
+
+                   }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
+
+
+
+        }
+
+
+
 
     }
 
@@ -249,6 +325,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun verileriGetir() {
 
+
+
+
         mref=FirebaseDatabase.getInstance().reference
 
         tumGonderiler.clear()
@@ -261,7 +340,7 @@ class MainActivity : AppCompatActivity() {
 
               Log.e("kullaniciID", "kullaniciID:" +tumPostlar.get(i))
 
-              mref.child("users").child("isletmeler").child(kullaniciID).addValueEventListener(object :ValueEventListener{
+              mref.child("users").child("isletmeler").child(kullaniciID).addListenerForSingleValueEvent(object :ValueEventListener{
                   override fun onDataChange(snapshot: DataSnapshot) {
 
                       var userID=snapshot.getValue(kullanicilar::class.java)!!.user_id
@@ -271,46 +350,72 @@ class MainActivity : AppCompatActivity() {
                       var isletmeLongi=snapshot.getValue(kullanicilar::class.java)!!.user_detail!!.longitude
 
 
-                      mref.child("kampanya").child(kullaniciID).addValueEventListener(object :ValueEventListener{
+
+
+                      mref.child("kampanya").child(kullaniciID).addListenerForSingleValueEvent(object :ValueEventListener{
                           override fun onDataChange(snapshot: DataSnapshot) {
 
-                              if (snapshot!!.hasChildren()){
-
-                                  for (ds in snapshot!!.children){
-
-                                      var eklenecekUserPost=kullaniciKampanya()
-
-                                      eklenecekUserPost.userID=userID
-                                      eklenecekUserPost.userName=kullaniciadi
-                                      eklenecekUserPost.userPhotoURL=photoURL
-                                      eklenecekUserPost.postID=ds.getValue(kampanya::class.java)!!.post_id
-                                      eklenecekUserPost.postURL=ds.getValue(kampanya::class.java)!!.file_url
-                                      eklenecekUserPost.postAciklama=ds.getValue(kampanya::class.java)!!.aciklama
-                                      eklenecekUserPost.postYuklenmeTarih=ds.getValue(kampanya::class.java)!!.yuklenme_tarih
-                                      eklenecekUserPost.geri_sayim=ds.getValue(kampanya::class.java)!!.geri_sayim
+                              if (snapshot.getValue()!=null) {
 
 
-                                      eklenecekUserPost.isletmeLatitude=isletmeLati
-                                      eklenecekUserPost.isletmeLongitude=isletmeLongi
 
-                                      tumGonderiler.add(eklenecekUserPost)
+                                  if (snapshot!!.hasChildren()) {
+
+                                      tumGonderiler.clear()
+                                      sayfaBasiGonderiler.clear()
+
+                                      for (ds in snapshot!!.children) {
+
+                                          var eklenecekUserPost = kullaniciKampanya()
+
+                                          eklenecekUserPost.userID = userID
+                                          eklenecekUserPost.userName = kullaniciadi
+                                          eklenecekUserPost.userPhotoURL = photoURL
+                                          eklenecekUserPost.postID =
+                                              ds.getValue(kampanya::class.java)!!.post_id
+                                          eklenecekUserPost.postURL =
+                                              ds.getValue(kampanya::class.java)!!.file_url
+                                          eklenecekUserPost.postAciklama =
+                                              ds.getValue(kampanya::class.java)!!.aciklama
+                                          eklenecekUserPost.postYuklenmeTarih =
+                                              ds.getValue(kampanya::class.java)!!.yuklenme_tarih
+                                          eklenecekUserPost.geri_sayim =
+                                              ds.getValue(kampanya::class.java)!!.geri_sayim
+
+
+                                          eklenecekUserPost.isletmeLatitude = isletmeLati
+                                          eklenecekUserPost.isletmeLongitude = isletmeLongi
+
+                                          tumGonderiler.add(eklenecekUserPost)
+
+
+
+
+                                      }
+                                      Log.e("tumgonderiler", "veriladsaderigetir:" + tumGonderiler.size)
 
 
                                   }
-
+                              }else
+                              {
                               }
 
 
                               if(i>=tumPostlar.size-1){
 
                                   if (tumPostlar.size>0){
-
                                       setUpRecyclerview()
                                   }
 
                               }
 
+
+
                           }
+
+
+
+
 
                           override fun onCancelled(error: DatabaseError) {
                           }
@@ -328,6 +433,10 @@ class MainActivity : AppCompatActivity() {
 
 
           }
+
+
+
+
 
 
 
@@ -384,6 +493,9 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
+
             }
         }
 
@@ -391,6 +503,22 @@ class MainActivity : AppCompatActivity() {
         recyclerAnaSayfa.layoutManager=layoutManager
         recyclerviewadapter= mainActivityRecyclerAdapter(this@MainActivity,sayfaBasiGonderiler)
         recyclerAnaSayfa.adapter=recyclerviewadapter
+
+
+
+          progressBar8.visibility=View.GONE
+          kampanyaYok.visibility=View.GONE
+          refreshMain_id.visibility=View.VISIBLE
+          recyclerAnaSayfa.visibility=View.VISIBLE
+          recyclerMainContainer.visibility=View.VISIBLE
+
+
+
+
+
+
+
+
 
 
 
@@ -417,11 +545,44 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+
         menuInflater.inflate(R.menu.menu2,menu)
-        return super.onCreateOptionsMenu(menu)
+
+
+        return true
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        mref.child("konusmalar").child(auth.currentUser!!.uid).addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (ds in snapshot.children){
+                    for (ds2 in ds.children){
+
+                        Log.e("data","mref"+ mref.child("konusmalar").child(auth.currentUser!!.uid))
+
+
+
+                      var s=  ds2.hasChild("goruldu")
+
+                        Log.e("false","döndü"+s)
+
+
+
+
+
+                    }
+
+
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
+
        mref.child("users").child("kullanicilar").addValueEventListener(object :ValueEventListener{
            override fun onDataChange(snapshot: DataSnapshot) {
                if (snapshot!!.getValue()!=null){
@@ -467,9 +628,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
+
         if (item.itemId== R.id.cikisYap){
 
+
             var dialog=signOutFragment()
+
             dialog.show(supportFragmentManager,"Çıkış yap")
 
         }

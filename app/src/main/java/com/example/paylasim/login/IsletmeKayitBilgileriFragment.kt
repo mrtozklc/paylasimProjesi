@@ -171,13 +171,6 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                                         })
 
 
-                                                                } else {
-
-                                                                    Toast.makeText(activity, "Oturum açılamadı :" + p0!!.exception, Toast.LENGTH_SHORT).show()
-
-                                                                    Log.e("oturum açılamadı","birinci else çalıstı")
-
-
                                                                 }
 
                                                             }
@@ -227,7 +220,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                         adres,
                                                         context,userID)
 
-                                                    //oturum açan kullanıcın verilerini databaseye kaydedelim...
+                                                    //oturum açan kullanıcın verilerini databaseye kaydet
 
                                                     var kaydedilecekKullaniciDetaylari = kullaniciDetaylari("0", "0", "0", "", "", "",adres,null,null)
                                                     var kaydedilecekKullanici = kullanicilar(gelenEmail, sifre, userName, adSoyad, telefon, "", userID, kaydedilecekKullaniciDetaylari)
@@ -256,12 +249,6 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
                                                         })
 
-
-                                                } else {
-
-                                                    Toast.makeText(activity, "Oturum açılamadı :" + p0!!.exception, Toast.LENGTH_SHORT).show()
-
-                                                    Log.e("oturum açılamadı","ikinci else çalıstı")
 
                                                 }
 
@@ -315,7 +302,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                     )
 
                 } else {
-                    btn_girisISletme.isEnabled = false
+
                     btn_girisISletme.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.white))
                     btn_girisISletme.setTextColor(ContextCompat.getColor(activity!!, R.color.black))
 

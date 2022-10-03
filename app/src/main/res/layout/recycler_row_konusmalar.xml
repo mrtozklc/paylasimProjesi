@@ -21,7 +21,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="kullanici adi"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/img_konusmalarpp"
@@ -45,7 +44,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="son mesaj"
         app:layout_constraintBottom_toBottomOf="@+id/img_konusmalarpp"
         app:layout_constraintStart_toEndOf="@+id/img_konusmalarpp"
         app:layout_constraintTop_toBottomOf="@+id/tv_username"></TextView>
@@ -55,7 +53,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="4 saat önce"
         app:layout_constraintBottom_toBottomOf="@+id/sonMesaj_id"
         app:layout_constraintStart_toEndOf="@+id/sonMesaj_id"
         app:layout_constraintTop_toTopOf="@+id/sonMesaj_id"

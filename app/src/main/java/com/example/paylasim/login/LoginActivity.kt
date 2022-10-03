@@ -126,50 +126,58 @@ class LoginActivity : AppCompatActivity() {
 
                     }
 
-                    if(kullaniciBulundu==false){
-                        Toast.makeText(this@LoginActivity,"Kullanıcı Bulunamadı", Toast.LENGTH_SHORT).show()
-                    }
+
                 }
 
-            }
+                mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+
+                    }
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+
+                        if(snapshot!!.getValue() != null ){
+                            for (ds in snapshot!!.children) {
+
+                                var okunanKullanici = ds.getValue(kullanicilar::class.java)
+
+                                if (!okunanKullanici!!.email!!.isNullOrEmpty() && okunanKullanici!!.email!!.toString().equals(emailPhoneNumberUserName)) {
+
+                                    oturumAc(okunanKullanici, sifre)
+                                    kullaniciBulundu=true
+                                    break
+
+                                } else if (!okunanKullanici!!.user_name!!.isNullOrEmpty() && okunanKullanici!!.user_name!!.toString().equals(emailPhoneNumberUserName)) {
+                                    oturumAc(okunanKullanici, sifre)
+                                    kullaniciBulundu=true
+                                    break
+                                }
+
+                            }
+
+                            if(kullaniciBulundu==false){
+                                Toast.makeText(this@LoginActivity,"Kullanıcı bulunamadı.Lütfen üye ol.", Toast.LENGTH_SHORT).show()
 
 
-        })
-        mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
+                            }
+                        }else{
+                            Toast.makeText(this@LoginActivity,"Kullanıcı bulunamadı.Lütfen üye ol.", Toast.LENGTH_SHORT).show()
 
-            }
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-
-                if(snapshot!!.getValue() != null ){
-                    for (ds in snapshot!!.children) {
-
-                        var okunanKullanici = ds.getValue(kullanicilar::class.java)
-
-                        if (!okunanKullanici!!.email!!.isNullOrEmpty() && okunanKullanici!!.email!!.toString().equals(emailPhoneNumberUserName)) {
-
-                            oturumAc(okunanKullanici, sifre)
-                            kullaniciBulundu=true
-                            break
-
-                        } else if (!okunanKullanici!!.user_name!!.isNullOrEmpty() && okunanKullanici!!.user_name!!.toString().equals(emailPhoneNumberUserName)) {
-                            oturumAc(okunanKullanici, sifre)
-                            kullaniciBulundu=true
-                            break
                         }
 
                     }
 
-                    if(kullaniciBulundu==false){
-                        Toast.makeText(this@LoginActivity,"Kullanıcı Bulunamadı", Toast.LENGTH_SHORT).show()
-                    }
-                }
+
+                })
+
+
 
             }
 
 
         })
+
 
 
 

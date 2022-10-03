@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="User name"
+        android:text=""
         android:textColor="#0B0A0A"
         android:textSize="20sp"
         android:textStyle="normal"

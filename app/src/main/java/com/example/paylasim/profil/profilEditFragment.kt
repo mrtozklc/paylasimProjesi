@@ -31,6 +31,7 @@ class profilEditFragment : Fragment() {
 
    lateinit var profileImage:CircleImageView
    var gelenKullaniciBilgileri=kullanicilar()
+
     lateinit var mDataRef:DatabaseReference
     lateinit var mStorage:StorageReference
     private lateinit var storage: FirebaseStorage
@@ -108,6 +109,10 @@ class profilEditFragment : Fragment() {
                                     if (itTask.isSuccessful) {
                                         progressBar4.visibility=View.GONE
 
+                                        val intent=Intent(activity, profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                        startActivity(intent)
+                                        requireActivity().finish()
+
 
 
 
@@ -132,8 +137,7 @@ class profilEditFragment : Fragment() {
 
             }
 
-            val intent=Intent(activity, profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
+
 
 
 

@@ -58,7 +58,7 @@ class kampanyaOlustur : AppCompatActivity() {
         auth=Firebase.auth
 
         val timer = ArrayList<String>()
-        timer.add("Saat Seciniz")
+        timer.add("Geri Sayım Süresi Seciniz")
         timer.add("1 saat")
         timer.add("2 saat")
         timer.add("3 saat")
@@ -161,6 +161,7 @@ private fun veritabaninakaydet(downloadurl:String?){
 
  var postID = db.child("kampanya").child(auth.uid!!).push().key
  var yuklenenPost = kampanya(auth.uid, postID, 0,aciklama_id.text.toString(),secilenSure, downloadurl)
+
 
 
  db.child("kampanya").child(auth.uid!!).child(postID!!).setValue(yuklenenPost)

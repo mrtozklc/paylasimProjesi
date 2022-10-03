@@ -124,10 +124,6 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
             if(editTextTextPersonName.hint.toString().equals("e-posta")){
 
 
-
-
-
-
                 if (checkMail(editTextTextPersonName.text.toString())) {
 
                     var emailKullanimdaMi = false
@@ -185,7 +181,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
                                                         }
 
-                                                    } // kullanici bulunamadı,kaydet
+                                                    } // işletme var kullanici var kullanici bulunamadı,kaydet
                                                     if (!emailKullanimdaMi){
                                                         loginroot.visibility = View.GONE
                                                         loginframe.visibility = View.VISIBLE
@@ -299,7 +295,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
                                                 }
                                             }
                                             if  (!emailKullanimdaMi)
-                                            //veritabanında kullanicida yok direkt kaydet
+                                            //veritabanında  işletme ve kullanici yok direkt kaydet
                                             {
                                                 Log.e("elsekkaydet","direktkaydetcalıstı")
 

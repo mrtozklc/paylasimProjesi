@@ -1,6 +1,7 @@
 package com.example.paylasim.util
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,10 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasim.R
+import com.example.paylasim.bildirimler.bildirimActivity
+import com.example.paylasim.mesajlar.chat
 import com.example.paylasim.models.bildirimModel
+import com.example.paylasim.profil.profil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -36,7 +40,7 @@ class bildirimRecyclerAdapter(var mcontext:Context,var tumBildirimler:ArrayList<
 
 
 
-    class viewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
+    class viewHolder(itemview: View, bildirim: Context): RecyclerView.ViewHolder(itemview) {
 
         var tumLayout=itemView as ConstraintLayout
         var gonderiBegenildi=tumLayout.tv_begendi
@@ -45,9 +49,19 @@ class bildirimRecyclerAdapter(var mcontext:Context,var tumBildirimler:ArrayList<
         var begenenPP=tumLayout.begenenpp_id
         var kampanya=tumLayout.begenilenKampanya_id
 
+        var myBildirimActivity =bildirim
+
 
 
         fun setdata(anlikBildirim: bildirimModel) {
+
+            kampanya.setOnClickListener {
+                var intent= Intent(myBildirimActivity, profil::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+
+
+                myBildirimActivity.startActivity(intent)
+
+            }
 
             if (anlikBildirim.bildirim_tur==1){
 
@@ -280,7 +294,7 @@ override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): viewHolder {
 
       LayoutInflater.from(mcontext).inflate(R.layout.recycler_row_bildirim,parent,false)
 
-  return bildirimRecyclerAdapter.viewHolder(view)
+  return bildirimRecyclerAdapter.viewHolder(view,mcontext)
 }
 
 override fun onBindViewHolder(holder: viewHolder, position: Int) {

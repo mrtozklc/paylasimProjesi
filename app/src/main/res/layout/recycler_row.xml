@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Kullanici adı"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -30,10 +30,12 @@
 
     <ImageView
         android:id="@+id/post_mesaj"
+        android:background="@drawable/ic_launcher_mesaj2_foreground"
+
+        android:layout_marginEnd="8dp"
         android:layout_width="72dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/ic_launcher_mesaj2_foreground"
+
         app:layout_constraintBottom_toBottomOf="@+id/kullaniciAdiTepe"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/kullaniciAdiTepe"/>
@@ -68,6 +70,18 @@
         app:layout_constraintTop_toTopOf="@+id/img_begen"
         app:srcCompat="@drawable/ic_launcher_yorum" />
 
+
+    <ImageView
+        android:id="@+id/delete"
+
+        android:layout_marginEnd="8dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:srcCompat="@drawable/ic_baseline_delete_24"
+        app:layout_constraintBottom_toBottomOf="@+id/kullaniciAdiTepe"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/kullaniciAdiTepe" />
+
     <TextView
         android:id="@+id/geri_sayim_id"
         android:layout_width="wrap_content"
@@ -87,7 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="kullanıci adı"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -101,7 +115,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="2dp"
-        android:text="3 gün önce"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_yorumGoster"
@@ -113,7 +127,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="TextView"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,7 +139,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="18 yorum"
+        android:text=""
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView21"

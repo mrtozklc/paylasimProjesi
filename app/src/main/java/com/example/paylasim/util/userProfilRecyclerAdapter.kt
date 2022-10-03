@@ -54,12 +54,15 @@ class userProfilRecyclerAdapter (var context: Context, var tumKampanyalar:ArrayL
         var begenmeSayisi=tumLayout.begenmeSayisi
         var yorumlariGoster=tumLayout.tv_yorumGoster
         var postMenu=tumLayout.post_mesaj
+        var delete=tumLayout.delete
 
 
         var myprofilActivity =profil
 
         @SuppressLint("SetTextI18n")
         fun setData(position: Int, anlikGonderi: kullaniciKampanya) {
+
+            delete.visibility=View.GONE
 
             userNameTitle.setText(anlikGonderi.userName)
             imageLoader.setImage(anlikGonderi.userPhotoURL!!, profileImage, null, "")

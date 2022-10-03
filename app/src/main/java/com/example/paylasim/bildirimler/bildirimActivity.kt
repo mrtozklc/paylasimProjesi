@@ -15,6 +15,9 @@ import com.example.paylasim.util.mainActivityRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_bildirim.*
+import kotlinx.android.synthetic.main.activity_bildirim.imageView_back
+import kotlinx.android.synthetic.main.activity_bildirim.refresh_id
+import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class bildirimActivity : AppCompatActivity() {
@@ -39,17 +42,24 @@ class bildirimActivity : AppCompatActivity() {
         refresh_id.setOnRefreshListener(object :SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
                 tumBildirimler.clear()
+                recyclerviewadapter= bildirimRecyclerAdapter(this@bildirimActivity,tumBildirimler)
                 recyclerviewadapter.notifyDataSetChanged()
                 bildirimleriGetir()
                 refresh_id.isRefreshing=false
             }
 
         })
+
+        imageView_back.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun bildirimleriGetir() {
         progressBarBildirim.visibility= View.VISIBLE
         recyclerBildirim.visibility=View.INVISIBLE
+
+
 
         mref.child("bildirimler").child(mauth.currentUser!!.uid).orderByChild("time").addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -78,6 +88,29 @@ class bildirimActivity : AppCompatActivity() {
 
         })
 
+        if (tumBildirimler.size==0){
+
+            mref.child("bildirimler").child(mauth.currentUser!!.uid).addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.getValue()==null){
+                        recyclerBildirim.visibility=View.GONE
+                        bildirim_yok.visibility=View.VISIBLE
+                    }
+                    else{
+                        recyclerBildirim.visibility=View.VISIBLE
+                        bildirim_yok.visibility=View.GONE
+
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
+
+        }
+
     }
 
     private fun recyclerAdapter() {
@@ -87,6 +120,8 @@ class bildirimActivity : AppCompatActivity() {
 
         recyclerviewadapter= bildirimRecyclerAdapter(this,tumBildirimler)
         mrecycler.adapter=recyclerviewadapter
+
+        
 
         object :CountDownTimer(1000,1000){
             override fun onTick(p0: Long) {
