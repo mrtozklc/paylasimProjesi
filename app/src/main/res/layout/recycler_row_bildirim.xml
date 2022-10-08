@@ -34,7 +34,6 @@
         android:layout_marginStart="8dp"
         android:text=""
         android:textAlignment="center"
-        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/begenenpp_id"
         app:layout_constraintEnd_toStartOf="@+id/begenilenKampanya_id"
         app:layout_constraintHorizontal_bias="0.169"

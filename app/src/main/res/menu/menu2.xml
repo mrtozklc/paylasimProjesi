@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+    <item android:id="@+id/sabitkampanyaOlustur_id"
+        android:title="sabit Kampanya Oluştur" ></item>
+
     <item android:id="@+id/kampanyaOlustur_id"
         android:title="Kampanya Oluştur" ></item>
 

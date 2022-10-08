@@ -1,17 +1,24 @@
 package com.example.paylasim.util
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Typeface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasim.R
 import com.example.paylasim.mesajlar.chat
+import com.example.paylasim.mesajlar.mesajlar
 import com.example.paylasim.models.konusmalar
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -19,10 +26,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.recycler_row_konusmalar.view.*
 
+
 class konusmalarRecyclerAdapter(var tumKonusmalar:ArrayList<konusmalar>,var myContext: Context):RecyclerView.Adapter<konusmalarRecyclerAdapter.myViewHolder>() {
 
 
     class myViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        var mref= FirebaseDatabase.getInstance().reference
 
 
         fun setdata(oankiKonusmalar: konusmalar) {
@@ -47,6 +57,7 @@ class konusmalarRecyclerAdapter(var tumKonusmalar:ArrayList<konusmalar>,var myCo
             gonderilmeZamani.text=TimeAgo.getTimeAgoForComments(oankiKonusmalar.gonderilmeZamani!!.toLong())
 
             if(oankiKonusmalar.goruldu==false){
+
 
                 okunduBilgisi.visibility=View.VISIBLE
                 userName.setTypeface(null, Typeface.BOLD)
@@ -75,11 +86,84 @@ class konusmalarRecyclerAdapter(var tumKonusmalar:ArrayList<konusmalar>,var myCo
                     .child("goruldu").setValue(true)
                     .addOnCompleteListener {
                         itemView.context.startActivity(intent)
+
+
                     }
 
 
 
             }
+
+            tumLayout.setOnLongClickListener(View.OnLongClickListener {
+
+
+
+                var alert = androidx.appcompat.app.AlertDialog.Builder(itemView.context, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
+                    .setTitle("MESAJI SİL ")
+                    .setPositiveButton("SİL", object : DialogInterface.OnClickListener {
+
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            var silinicekKonusma=oankiKonusmalar.user_id
+
+
+                            mref.child("mesajlar").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(silinicekKonusma!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    snapshot.ref.removeValue()
+
+
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+
+                            })
+
+
+
+
+                            mref.child("konusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(silinicekKonusma!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    snapshot.ref.removeValue()
+
+
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+
+                            })
+
+
+
+
+
+
+
+
+
+
+
+
+                        }
+
+                    })
+                    .setNegativeButton("VAZGEÇ", object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            p0!!. dismiss()
+                        }
+
+                    })
+                    .create()
+
+                alert.show()
+
+                return@OnLongClickListener true
+
+
+            })
+
+
+
 
 
 
@@ -92,7 +176,10 @@ class konusmalarRecyclerAdapter(var tumKonusmalar:ArrayList<konusmalar>,var myCo
 
         }
 
+
         private fun konusulanKisininBilgilerinigetir(userID: String) {
+
+
 
             var mref= FirebaseDatabase.getInstance().reference
 

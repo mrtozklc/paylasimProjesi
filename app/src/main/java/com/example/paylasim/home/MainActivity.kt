@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -28,25 +29,28 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.paylasim.R
 import com.example.paylasim.bildirimler.bildirimActivity
 import com.example.paylasim.kampanyaolustur.kampanyaOlustur
+import com.example.paylasim.kampanyaolustur.sabitKampanyaOlustur
 import com.example.paylasim.login.LoginActivity
 import com.example.paylasim.login.signOutFragment
 import com.example.paylasim.mesajlar.mesajlar
-import com.example.paylasim.models.kampanya
-import com.example.paylasim.models.konusmalar
-import com.example.paylasim.models.kullaniciKampanya
-import com.example.paylasim.models.kullanicilar
+import com.example.paylasim.models.*
 import com.example.paylasim.profil.profil
 import com.example.paylasim.util.imageLoader
 import com.example.paylasim.util.mainActivityRecyclerAdapter
+import com.example.paylasim.util.sabitKampanyaRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.nostra13.universalimageloader.core.ImageLoader
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType
+import com.smarteist.autoimageslider.SliderView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_mesajlar.*
+import kotlinx.android.synthetic.main.recycler_row_sabit_kampanyalar.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mauthLis:FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
     var tumGonderiler=ArrayList<kullaniciKampanya>()
+    var tumSabitKampanyalar=ArrayList<sabitKampanya>()
     var sayfaBasiGonderiler=ArrayList<kullaniciKampanya>()
     var tumPostlar=ArrayList<String>()
     val SAYFA_BASI_GONDERI=10
@@ -63,6 +68,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var recyclerviewadapter:mainActivityRecyclerAdapter
+    private  lateinit var  recyclerSabitAdapter:sabitKampanyaRecyclerAdapter
 
 
 
@@ -87,6 +93,7 @@ class MainActivity : AppCompatActivity() {
 
         setupAuthLis()
         tumVerileriGetir()
+        tumSabitKampanyalariGetir()
 
 
 
@@ -142,9 +149,7 @@ class MainActivity : AppCompatActivity() {
                 sayfaninSonunaGelindi=false
 
                 recyclerviewadapter.notifyDataSetChanged()
-
-               tumVerileriGetir()
-
+               verileriGetir()
                 refreshMain_id.isRefreshing = false
 
             }
@@ -153,6 +158,94 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+
+    }
+
+    private fun tumSabitKampanyalariGetir() {
+
+
+        mref.child("sabitKampanyalar").addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                if (snapshot.getValue()!=null) {
+
+                    if (snapshot!!.hasChildren()) {
+
+
+                        for (ds in snapshot!!.children) {
+
+                            for (ds in ds.children){
+                                var eklenecekSabitKampanya = sabitKampanya()
+
+                                eklenecekSabitKampanya.post_id=ds.getValue(sabitKampanya::class.java)!!.post_id
+                                eklenecekSabitKampanya.file_url=ds.getValue(sabitKampanya::class.java)!!.file_url
+                                eklenecekSabitKampanya.aciklama=ds.getValue(sabitKampanya::class.java)!!.aciklama
+                                eklenecekSabitKampanya.user_id=ds.getValue(sabitKampanya::class.java)!!.user_id
+                                eklenecekSabitKampanya.yuklenme_tarih=ds.getValue(sabitKampanya::class.java)!!.yuklenme_tarih
+
+                                tumSabitKampanyalar.add(eklenecekSabitKampanya)
+
+                                Log.e("eklenecek","kampanyalarsabit:"+tumSabitKampanyalar)
+
+                            }
+
+
+
+                            val adapter = sabitKampanyaRecyclerAdapter(this@MainActivity,tumSabitKampanyalar)
+
+                            val sliderView = findViewById<SliderView>(R.id.slider)
+
+
+                            sliderView.autoCycleDirection = SliderView.LAYOUT_DIRECTION_LTR
+
+
+                            sliderView.setSliderAdapter(adapter)
+
+                            sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM)
+
+                            sliderView.scrollTimeInSec = 3
+                            sliderView.setIndicatorSelectedColor(Color.WHITE);
+                            sliderView.setIndicatorUnselectedColor(Color.GRAY);
+
+
+                            sliderView.isAutoCycle = true
+
+                            sliderView.startAutoCycle()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        }
+
+
+
+                    }
+                }
+
+
+
+
+
+            }
+
+
+
+
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
 
     }
 
@@ -193,10 +286,6 @@ class MainActivity : AppCompatActivity() {
         sayfaBasiGonderiler.clear()
 
 
-
-
-
-
         mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
 
@@ -208,6 +297,7 @@ class MainActivity : AppCompatActivity() {
                     for(ds in p0.children){
                         tumPostlar.add(ds.key!!)
                     }
+
 
                     verileriGetir()
 
@@ -330,8 +420,7 @@ class MainActivity : AppCompatActivity() {
 
         mref=FirebaseDatabase.getInstance().reference
 
-        tumGonderiler.clear()
-        sayfaBasiGonderiler.clear()
+
 
         for(i in 0..tumPostlar.size-1){
 
@@ -357,12 +446,8 @@ class MainActivity : AppCompatActivity() {
 
                               if (snapshot.getValue()!=null) {
 
-
-
                                   if (snapshot!!.hasChildren()) {
 
-                                      tumGonderiler.clear()
-                                      sayfaBasiGonderiler.clear()
 
                                       for (ds in snapshot!!.children) {
 
@@ -371,18 +456,11 @@ class MainActivity : AppCompatActivity() {
                                           eklenecekUserPost.userID = userID
                                           eklenecekUserPost.userName = kullaniciadi
                                           eklenecekUserPost.userPhotoURL = photoURL
-                                          eklenecekUserPost.postID =
-                                              ds.getValue(kampanya::class.java)!!.post_id
-                                          eklenecekUserPost.postURL =
-                                              ds.getValue(kampanya::class.java)!!.file_url
-                                          eklenecekUserPost.postAciklama =
-                                              ds.getValue(kampanya::class.java)!!.aciklama
-                                          eklenecekUserPost.postYuklenmeTarih =
-                                              ds.getValue(kampanya::class.java)!!.yuklenme_tarih
-                                          eklenecekUserPost.geri_sayim =
-                                              ds.getValue(kampanya::class.java)!!.geri_sayim
-
-
+                                          eklenecekUserPost.postID = ds.getValue(kampanya::class.java)!!.post_id
+                                          eklenecekUserPost.postURL = ds.getValue(kampanya::class.java)!!.file_url
+                                          eklenecekUserPost.postAciklama = ds.getValue(kampanya::class.java)!!.aciklama
+                                          eklenecekUserPost.postYuklenmeTarih = ds.getValue(kampanya::class.java)!!.yuklenme_tarih
+                                          eklenecekUserPost.geri_sayim = ds.getValue(kampanya::class.java)!!.geri_sayim
                                           eklenecekUserPost.isletmeLatitude = isletmeLati
                                           eklenecekUserPost.isletmeLongitude = isletmeLongi
 
@@ -392,7 +470,7 @@ class MainActivity : AppCompatActivity() {
 
 
                                       }
-                                      Log.e("tumgonderiler", "veriladsaderigetir:" + tumGonderiler.size)
+
 
 
                                   }
@@ -523,6 +601,9 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
+
         recyclerAnaSayfa.addOnScrollListener(object :RecyclerView.OnScrollListener(){
             override fun onScrolled(
                 recyclerView: RecyclerView,
@@ -554,33 +635,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        mref.child("konusmalar").child(auth.currentUser!!.uid).addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (ds in snapshot.children){
-                    for (ds2 in ds.children){
-
-                        Log.e("data","mref"+ mref.child("konusmalar").child(auth.currentUser!!.uid))
-
-
-
-                      var s=  ds2.hasChild("goruldu")
-
-                        Log.e("false","döndü"+s)
-
-
-
-
-
-                    }
-
-
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-
-        })
 
 
        mref.child("users").child("kullanicilar").addValueEventListener(object :ValueEventListener{
@@ -589,9 +643,22 @@ class MainActivity : AppCompatActivity() {
 
                    for (user in snapshot!!.children){
                        var okunanKullanici = user.getValue(kullanicilar::class.java)!!
-                       Log.e("murat","okunanKullanici"+okunanKullanici)
 
-                       if(okunanKullanici!!.user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                       if (okunanKullanici!!.user_name.equals("adminn")){
+
+                           var kampanyaMenu=menu!!.findItem(R.id.kampanyaOlustur_id)
+                           kampanyaMenu.isVisible=true
+                           var profilMenu=menu!!.findItem(R.id.profil_id)
+                           profilMenu.isVisible=true
+                           var bildirimMenu=menu!!.findItem(R.id.bildirimler_id)
+                           bildirimMenu.isVisible=true
+                           var sabitKampanya=menu!!.findItem(R.id.sabitkampanyaOlustur_id)
+                           sabitKampanya.isVisible=true
+
+
+                       }
+
+                      else if(okunanKullanici!!.user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
                            Log.e("murat","userid"+okunanKullanici.user_id)
 
 
@@ -601,19 +668,24 @@ class MainActivity : AppCompatActivity() {
                            profilMenu.isVisible=false
                            var bildirimMenu=menu!!.findItem(R.id.bildirimler_id)
                            bildirimMenu.isVisible=false
+                           var sabitKampanya=menu!!.findItem(R.id.sabitkampanyaOlustur_id)
+                           sabitKampanya.isVisible=false
+
+                       }
+                       else{
+                           var kampanyaMenu=menu!!.findItem(R.id.kampanyaOlustur_id)
+                           kampanyaMenu.isVisible=true
+                           var profilMenu=menu!!.findItem(R.id.profil_id)
+                           profilMenu.isVisible=true
+                           var bildirimMenu=menu!!.findItem(R.id.bildirimler_id)
+                           bildirimMenu.isVisible=true
+                           var sabitKampanya=menu!!.findItem(R.id.sabitkampanyaOlustur_id)
+                           sabitKampanya.isVisible=false
 
                        }
 
 
                    }
-
-               }else{
-                   var kampanyaMenu=menu!!.findItem(R.id.kampanyaOlustur_id)
-                   kampanyaMenu.isVisible=true
-                   var profilMenu=menu!!.findItem(R.id.profil_id)
-                   profilMenu.isVisible=true
-                   var bildirimMenu=menu!!.findItem(R.id.bildirimler_id)
-                   bildirimMenu.isVisible=true
 
                }
            }
@@ -644,6 +716,11 @@ class MainActivity : AppCompatActivity() {
         }
         if(item.itemId==R.id.kampanyaOlustur_id){
             val intent=Intent(this,kampanyaOlustur::class.java)
+            startActivity(intent)
+        }
+
+        if(item.itemId==R.id.sabitkampanyaOlustur_id){
+            val intent=Intent(this,sabitKampanyaOlustur::class.java)
             startActivity(intent)
         }
         if(item.itemId==R.id.mesajlar_id){

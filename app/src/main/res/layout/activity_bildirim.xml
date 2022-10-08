@@ -25,7 +25,8 @@
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_back_foreground" />
+        app:srcCompat="@drawable/ic_launcher_back_foreground"
+       />
 
     <View
         android:id="@+id/golgelik"
@@ -42,7 +43,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:text="Bildirimler"
-        android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
         app:layout_constraintStart_toEndOf="@+id/imageView_back"
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/bildirim_yok"
         android:text="Henüz bildirimin yok"
-        android:textColor="@color/black"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

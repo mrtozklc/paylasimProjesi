@@ -16,7 +16,6 @@
         android:textSize="14sp"
         app:layout_constraintWidth_max="300dp"
         android:background="@drawable/mesaj_gonderen_bg"
-        android:textColor="@color/black"
 
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"

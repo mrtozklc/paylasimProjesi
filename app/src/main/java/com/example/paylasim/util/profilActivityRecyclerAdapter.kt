@@ -70,7 +70,7 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
             Log.e("murat","profilpp"+anlikGonderi.postURL)
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
-            Picasso.get().load(anlikGonderi.postURL).into(gonderi)
+            Picasso.get().load(anlikGonderi.postURL).fit().into(gonderi)
 
             kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
 
@@ -102,6 +102,7 @@ class profilActivityRecyclerAdapter(var context:Context, var tumKampanyalar:Arra
 
 
                             var postID = anlikGonderi.postID
+
 
                             mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(postID!!).addListenerForSingleValueEvent(object :ValueEventListener{
                                 override fun onDataChange(snapshot: DataSnapshot) {

@@ -99,9 +99,14 @@ class kampanyaOlustur : AppCompatActivity() {
 
     fun paylasimyap(view: View) {
 
+        progressBarKampanya.visibility=View.VISIBLE
+        imageView4.visibility=View.GONE
+        aciklama_id.visibility=View.GONE
+        spinner.visibility=View.GONE
+        btn_paylas.visibility=View.GONE
 
- btn_paylas.isEnabled=false
-        Log.e("TAG","tıklandı. ${btn_paylas.isEnabled}")
+
+
 
 
  secilenSure = spinner!!.selectedItem.toString()
@@ -114,13 +119,13 @@ class kampanyaOlustur : AppCompatActivity() {
  val uuid = UUID.randomUUID()
  val gorselismi = "${uuid}.jpg"
  val reference = storage.reference
- val gorselreference = reference.child("images").child(gorselismi)
+ val gorselreference = reference.child("kampanyalar").child(gorselismi)
 
 
  if (secilengorsel!=null){
      gorselreference.putFile(secilengorsel!!).addOnSuccessListener { taskSnapshot->
          val yuklenengorselreference=
-             FirebaseStorage.getInstance().reference.child("images").child(gorselismi)
+             FirebaseStorage.getInstance().reference.child("kampanyalar").child(gorselismi)
          yuklenengorselreference.downloadUrl.addOnSuccessListener { uri->
              val downloadurl=uri.toString()
              veritabaninakaydet(downloadurl)
@@ -148,12 +153,6 @@ class kampanyaOlustur : AppCompatActivity() {
 
 }
 
-
-
-
-
-
-
 private fun veritabaninakaydet(downloadurl:String?){
 
 
@@ -178,6 +177,11 @@ private fun veritabaninakaydet(downloadurl:String?){
 
  }
  kampanyaSayisiniGuncelle()
+    progressBarKampanya.visibility=View.GONE
+    imageView4.visibility=View.VISIBLE
+    aciklama_id.visibility=View.VISIBLE
+    spinner.visibility=View.VISIBLE
+    btn_paylas.visibility=View.VISIBLE
 
  val intent=Intent(this,MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
  startActivity(intent)

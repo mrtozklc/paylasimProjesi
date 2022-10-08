@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:text=""
-        android:textColor="#0B0A0A"
+
         android:textSize="20sp"
         android:textStyle="normal"
         app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
@@ -90,7 +90,7 @@
         android:layout_marginEnd="4dp"
         android:text="Gönder"
         android:textAlignment="center"
-        android:textColor="#090909"
+
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/et_mesajEkle"
         app:layout_constraintEnd_toEndOf="parent"

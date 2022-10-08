@@ -16,10 +16,8 @@ import com.example.paylasim.home.MainActivity
 import com.example.paylasim.models.kullanicilar
 import com.example.paylasim.util.EventbusData
 import com.example.paylasim.util.imageLoader
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.messaging.FirebaseMessaging
 import com.nostra13.universalimageloader.core.ImageLoader
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
@@ -189,7 +187,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
                                                             supportFragmentManager.beginTransaction()
                                                         transaction.replace(
                                                             R.id.loginframe,
-                                                            emailOnayFragment()
+                                                            kullaniciBilgileriFragment()
                                                         )
                                                         transaction.addToBackStack("emailileGirisFragmentEklendi")
                                                         transaction.commit()
@@ -216,7 +214,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
                                                     var transaction = supportFragmentManager.beginTransaction()
                                                     transaction.replace(
                                                         R.id.loginframe,
-                                                        emailOnayFragment()
+                                                        kullaniciBilgileriFragment()
                                                     )
                                                     transaction.addToBackStack("emailileGirisFragmentEklendi")
                                                     transaction.commit()
@@ -279,7 +277,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
                                                     var transaction = supportFragmentManager.beginTransaction()
                                                     transaction.replace(
                                                         R.id.loginframe,
-                                                        emailOnayFragment()
+                                                        kullaniciBilgileriFragment()
                                                     )
                                                     transaction.addToBackStack("emailileGirisFragmentEklendi")
                                                     transaction.commit()
@@ -308,7 +306,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
                                                 var transaction = supportFragmentManager.beginTransaction()
                                                 transaction.replace(
                                                     R.id.loginframe,
-                                                    emailOnayFragment()
+                                                    kullaniciBilgileriFragment()
                                                 )
                                                 transaction.addToBackStack("emailileGirisFragmentEklendi")
                                                 transaction.commit()

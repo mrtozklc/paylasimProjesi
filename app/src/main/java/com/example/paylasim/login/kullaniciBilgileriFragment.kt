@@ -24,13 +24,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.android.synthetic.main.fragment_email_onay.*
-import kotlinx.android.synthetic.main.fragment_email_onay.view.*
+import kotlinx.android.synthetic.main.fragment_kullanici_bilgileri.*
+import kotlinx.android.synthetic.main.fragment_kullanici_bilgileri.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 
-class emailOnayFragment : Fragment() {
+class kullaniciBilgileriFragment : Fragment() {
     var gelenEmail = ""
     var telNo = ""
     var verificationID = ""
@@ -48,7 +48,7 @@ class emailOnayFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        var view = inflater.inflate(R.layout.fragment_email_onay, container, false)
+        var view = inflater.inflate(R.layout.fragment_kullanici_bilgileri, container, false)
 
         auth = Firebase.auth
         mref = FirebaseDatabase.getInstance().reference

@@ -24,7 +24,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="Yükleniyor"
-        android:textColor="#070707"
         app:layout_constraintBottom_toBottomOf="@+id/progressBar"
         app:layout_constraintStart_toEndOf="@+id/progressBar"
         app:layout_constraintTop_toTopOf="@+id/progressBar"

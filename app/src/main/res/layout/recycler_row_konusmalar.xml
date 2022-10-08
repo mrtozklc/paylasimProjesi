@@ -21,7 +21,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/img_konusmalarpp"
         app:layout_constraintTop_toTopOf="@+id/img_konusmalarpp"></TextView>
@@ -57,6 +56,7 @@
         app:layout_constraintStart_toEndOf="@+id/sonMesaj_id"
         app:layout_constraintTop_toTopOf="@+id/sonMesaj_id"
         app:layout_constraintVertical_bias="0.0"></TextView>
+
 
 
 

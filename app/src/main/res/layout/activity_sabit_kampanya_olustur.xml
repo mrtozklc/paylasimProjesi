@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".kampanyaolustur.kampanyaOlustur">
+    tools:context=".kampanyaolustur.sabitKampanyaOlustur">
+
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/gorselllsec"
         android:layout_width="154dp"
         android:layout_height="201dp"
         android:layout_marginTop="16dp"
@@ -18,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <ProgressBar
-        android:id="@+id/progressBarKampanya"
+        android:id="@+id/progressBarSabitKampanya"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
         android:visibility="gone"/>
 
     <EditText
-        android:id="@+id/aciklama_id"
+        android:id="@+id/aciklama_idd"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -39,17 +40,17 @@
         android:textColor="@color/black"
         app:layout_constraintHeight_max="200dp"
         android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+        app:layout_constraintBottom_toBottomOf="@+id/gorselllsec"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toTopOf="@+id/imageView4"></EditText>
+        app:layout_constraintStart_toEndOf="@+id/gorselllsec"
+        app:layout_constraintTop_toTopOf="@+id/gorselllsec"></EditText>
 
     <Button
         android:id="@+id/btn_paylas"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/register_edit_text"
         android:onClick="paylasimyap"
         android:text="PAYLAŞ"
@@ -57,16 +58,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
+        app:layout_constraintTop_toBottomOf="@+id/gorselllsec"
         tools:ignore="OnClick" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 </androidx.constraintlayout.widget.ConstraintLayout>

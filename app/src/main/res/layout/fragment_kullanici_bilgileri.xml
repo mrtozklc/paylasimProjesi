@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".login.emailOnayFragment">
+    tools:context=".login.kullaniciBilgileriFragment">
 
     <TextView
         android:id="@+id/textView18"
@@ -28,7 +28,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/register_edit_text"
         android:ems="10"
         android:hint="Adın ve soyadın"
         android:padding="16dp"
@@ -43,10 +42,9 @@
         android:id="@+id/etSifre"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/register_edit_text"
+        android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="Şifre"
         android:inputType="textPassword"
@@ -62,7 +60,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/register_edit_text"
         android:padding="16dp"
         android:ems="10"
         android:hint="Kullanıcı Adı"

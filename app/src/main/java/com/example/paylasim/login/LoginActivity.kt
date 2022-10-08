@@ -24,7 +24,6 @@ import com.google.firebase.database.*
 import com.google.firebase.iid.FirebaseInstanceIdReceiver
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.fragment_email_onay.*
 
 class LoginActivity : AppCompatActivity() {
 

@@ -26,7 +26,11 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.recycler_row.view.*
 import org.greenrobot.eventbus.EventBus
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.collections.ArrayList
+import kotlin.math.roundToLong
+
 class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayList<kullaniciKampanya>):RecyclerView.Adapter<mainActivityRecyclerAdapter.MyViewHolder>() {
 
 
@@ -41,6 +45,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
         var userNameTitle = tumLayout.kullaniciAdiTepe
         var gonderi = tumLayout.kampanyaPhoto
         var userNameveAciklama = tumLayout.textView21
+
         var kampanyaTarihi = tumLayout.kampanyaTarihi_id
         var yorumYap = tumLayout.img_yorum
         var gonderiBegen = tumLayout.img_begen
@@ -84,16 +89,20 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
                                     startPoint.distanceTo(endPoint).toDouble().toInt()
 
 
-                                Log.e("gelenkonum1","${anlikGonderi.isletmeLatitude!!.toDouble()}")
-                                Log.e("gelenkonum1","${anlikGonderi.isletmeLongitude!!.toDouble()}")
+                                if (distance>1000){
+                                 var distanceKM=distance.toDouble()/1000
+                                   println(BigDecimal(distanceKM))
+                                  var k=  distanceKM.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+                                    mesafe.setText(k.toDouble().toString() + "   km")
 
 
+                                }else{
+                                    mesafe.setText(distance.toString() + "   metre")
 
-                                Log.e("gelenkonum","${latitude.toDouble()}")
-                                Log.e("gelenkonum","${longitude.toDouble()}")
+
+                                }
 
 
-                                mesafe.setText(distance.toString() + "   metre")
                             }
 
 
@@ -126,10 +135,14 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
 
-            Picasso.get().load(anlikGonderi.postURL).fit().centerCrop().into(gonderi)
+            Picasso.get().load(anlikGonderi.postURL).fit().into(gonderi)
 
 
             kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
+
+            Log.e("gelen gerisayim","${anlikGonderi.geri_sayim}")
+
+
 
 
             if (anlikGonderi.geri_sayim=="1 saat"){
@@ -140,7 +153,10 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
                     if (time < 1000000000000L) {
                         // if timestamp given in seconds, convert to millis
                         time *= 1000
+
                     }
+                    Log.e("gelentimecarpilmis","dsa"+time)
+                    Log.e("gelentimecarpilmis","dsa"+ System.currentTimeMillis())
                 }
                 val now = System.currentTimeMillis()
                 if (time != null) {
@@ -318,6 +334,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
 
 
+
             userNameTitle.setOnClickListener {
 
 
@@ -340,6 +357,7 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
 
 
             }
+
             postMenu.setOnClickListener {
                 var mref=FirebaseDatabase.getInstance().reference
                 var mauth=FirebaseAuth.getInstance().currentUser!!.uid
@@ -379,8 +397,8 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
             }
 
             begeniKontrolu(anlikGonderi)
-            yorumlariGoster(position,anlikGonderi)
 
+            yorumlariGoster(position,anlikGonderi)
 
             yorumYap.setOnClickListener {
 
@@ -565,7 +583,6 @@ class mainActivityRecyclerAdapter(var context:Context,var tumKampanyalar:ArrayLi
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
         holder.setData(position, tumKampanyalar[position])
-        Log.e("tumkonumlar","tümkampanyalar::: ${tumKampanyalar[position]}:konumlar::")
 
 
 
