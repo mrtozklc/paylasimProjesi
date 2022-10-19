@@ -69,7 +69,7 @@ class userProfilRecyclerAdapter (var context: Context, var tumKampanyalar:ArrayL
            // Picasso.get().load(anlikGonderi.userPhotoURL).into(profileImage)
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
-            Picasso.get().load(anlikGonderi.postURL).into(gonderi)
+            Picasso.get().load(anlikGonderi.postURL).centerCrop().fit().into(gonderi)
 
             kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
 

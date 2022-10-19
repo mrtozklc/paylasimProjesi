@@ -51,6 +51,8 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
     private fun register() {
 
+        
+
         textView3.setOnClickListener {
             val intent =
                 Intent(this@RegisterActivity, LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
